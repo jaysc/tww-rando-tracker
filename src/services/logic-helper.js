@@ -344,6 +344,11 @@ export default class LogicHelper {
     return `${shortDungeonName} Compass`;
   }
 
+  static mapName(dungeonName) {
+    const shortDungeonName = this._shortDungeonName(dungeonName);
+    return `${shortDungeonName} Map`;
+  }
+
   static maxSmallKeysForDungeon(dungeonName) {
     const smallKeyName = this.smallKeyName(dungeonName);
     return this.maxItemCount(smallKeyName);

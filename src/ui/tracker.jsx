@@ -29,6 +29,7 @@ class Tracker extends React.PureComponent {
       openedLocation: null,
       openedLocationIsDungeon: null,
       singleColorBackground: false,
+      speedrunMode: false,
     };
 
     this.initialize();
@@ -42,6 +43,7 @@ class Tracker extends React.PureComponent {
     this.toggleLocationChecked = this.toggleLocationChecked.bind(this);
     this.toggleOnlyProgressLocations = this.toggleOnlyProgressLocations.bind(this);
     this.toggleSingleColorBackground = this.toggleSingleColorBackground.bind(this);
+    this.toggleSpeedrunMode = this.toggleSpeedrunMode.bind(this);
     this.unsetExit = this.unsetExit.bind(this);
     this.updateEntranceForExit = this.updateEntranceForExit.bind(this);
     this.updateOpenedExit = this.updateOpenedExit.bind(this);
@@ -243,6 +245,14 @@ class Tracker extends React.PureComponent {
     });
   }
 
+  toggleSpeedrunMode() {
+    const { speedrunMode } = this.state;
+
+    this.setState({
+      speedrunMode: !speedrunMode,
+    });
+  }
+
   render() {
     const {
       disableLogic,
@@ -255,6 +265,7 @@ class Tracker extends React.PureComponent {
       openedLocationIsDungeon,
       saveData,
       singleColorBackground,
+      speedrunMode,
       trackerState,
     } = this.state;
 
@@ -274,6 +285,7 @@ class Tracker extends React.PureComponent {
               decrementItem={this.decrementItem}
               incrementItem={this.incrementItem}
               singleColorBackground={singleColorBackground}
+              speedrunMode={speedrunMode}
               trackerState={trackerState}
             />
             <LocationsTable
@@ -289,6 +301,7 @@ class Tracker extends React.PureComponent {
               openedLocation={openedLocation}
               openedLocationIsDungeon={openedLocationIsDungeon}
               singleColorBackground={singleColorBackground}
+              speedrunMode={speedrunMode}
               toggleLocationChecked={this.toggleLocationChecked}
               trackerState={trackerState}
               unsetExit={this.unsetExit}
@@ -309,10 +322,12 @@ class Tracker extends React.PureComponent {
             onlyProgressLocations={onlyProgressLocations}
             saveData={saveData}
             singleColorBackground={singleColorBackground}
+            speedrunMode={speedrunMode}
             toggleDisableLogic={this.toggleDisableLogic}
             toggleEntrancesList={this.toggleEntrancesList}
             toggleOnlyProgressLocations={this.toggleOnlyProgressLocations}
             toggleSingleColorBackground={this.toggleSingleColorBackground}
+            toggleSpeedrunMode={this.toggleSpeedrunMode}
           />
         </div>
       );

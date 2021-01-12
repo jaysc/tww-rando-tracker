@@ -22,6 +22,7 @@ class ExtraLocationsTable extends React.PureComponent {
       setSelectedExit,
       setSelectedItem,
       setSelectedLocation,
+      speedrunMode,
       trackerState,
       unsetExit,
       updateOpenedExit,
@@ -60,6 +61,9 @@ class ExtraLocationsTable extends React.PureComponent {
       const compassName = LogicHelper.compassName(locationName);
       const compassCount = trackerState.getItemValue(compassName);
 
+      const mapName = LogicHelper.mapName(locationName);
+      const mapCount = trackerState.getItemValue(mapName);
+
       const entryName = LogicHelper.entryName(locationName);
       const entryCount = trackerState.getItemValue(entryName);
 
@@ -82,6 +86,8 @@ class ExtraLocationsTable extends React.PureComponent {
           isMainDungeon={isMainDungeon}
           locationIcon={locationIcon}
           locationName={locationName}
+          mapName={mapName}
+          mapCount={mapCount}
           numAvailable={numAvailable}
           numRemaining={numRemaining}
           setSelectedExit={setSelectedExit}
@@ -89,6 +95,7 @@ class ExtraLocationsTable extends React.PureComponent {
           setSelectedLocation={setSelectedLocation}
           smallKeyCount={smallKeyCount}
           smallKeyName={smallKeyName}
+          speedrunMode={speedrunMode}
           unsetExit={unsetExit}
           updateOpenedExit={updateOpenedExit}
           updateOpenedLocation={updateOpenedLocation}
@@ -109,6 +116,7 @@ class ExtraLocationsTable extends React.PureComponent {
         numAvailable={numAvailable}
         numRemaining={numRemaining}
         setSelectedLocation={setSelectedLocation}
+        speedrunMode={speedrunMode}
         updateOpenedLocation={updateOpenedLocation}
       />
     );
@@ -146,6 +154,7 @@ ExtraLocationsTable.propTypes = {
   setSelectedItem: PropTypes.func.isRequired,
   setSelectedLocation: PropTypes.func.isRequired,
   singleColorBackground: PropTypes.bool.isRequired,
+  speedrunMode: PropTypes.bool.isRequired,
   trackerState: PropTypes.instanceOf(TrackerState).isRequired,
   unsetExit: PropTypes.func.isRequired,
   updateOpenedExit: PropTypes.func.isRequired,

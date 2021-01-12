@@ -164,6 +164,7 @@ class LocationsTable extends React.PureComponent {
       logic,
       onlyProgressLocations,
       singleColorBackground,
+      speedrunMode,
       trackerState,
       unsetExit,
       updateOpenedExit,
@@ -185,6 +186,7 @@ class LocationsTable extends React.PureComponent {
           setSelectedItem={this.setSelectedItem}
           setSelectedLocation={this.setSelectedLocation}
           singleColorBackground={singleColorBackground}
+          speedrunMode={speedrunMode}
           trackerState={trackerState}
           unsetExit={unsetExit}
           updateOpenedExit={updateOpenedExit}
@@ -214,6 +216,7 @@ LocationsTable.propTypes = {
   openedLocation: PropTypes.string,
   openedLocationIsDungeon: PropTypes.bool,
   singleColorBackground: PropTypes.bool.isRequired,
+  speedrunMode: PropTypes.bool.isRequired,
   toggleLocationChecked: PropTypes.func.isRequired,
   trackerState: PropTypes.instanceOf(TrackerState).isRequired,
   unsetExit: PropTypes.func.isRequired,

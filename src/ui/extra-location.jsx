@@ -88,6 +88,32 @@ class ExtraLocation extends React.PureComponent {
     );
   }
 
+  mapItem() {
+    const {
+      clearSelectedItem,
+      decrementItem,
+      incrementItem,
+      mapCount,
+      mapName,
+      setSelectedItem,
+    } = this.props;
+
+    const mapItemImages = _.get(Images.IMAGES, 'MAP');
+    return (
+      <div className="dungeon-item map">
+        <Item
+          clearSelectedItem={clearSelectedItem}
+          decrementItem={decrementItem}
+          images={mapItemImages}
+          incrementItem={incrementItem}
+          setSelectedItem={setSelectedItem}
+          itemCount={mapCount}
+          itemName={mapName}
+        />
+      </div>
+    );
+  }
+
   entrance() {
     const {
       clearSelectedItem,
@@ -126,12 +152,17 @@ class ExtraLocation extends React.PureComponent {
   }
 
   dungeonItems() {
+    const {
+      speedrunMode,
+    } = this.props;
+
     return (
       <div className="dungeon-items">
         {this.smallKeyItem()}
         { LogicHelper.isRandomDungeonEntrances() && this.entrance() }
         {this.bigKeyItem()}
-        {this.compassItem()}
+        {speedrunMode && this.compassItem()}
+        {speedrunMode && this.mapItem()}
       </div>
     );
   }
@@ -217,10 +248,13 @@ ExtraLocation.defaultProps = {
   entryCount: null,
   entryName: null,
   incrementItem: null,
+  mapCount: null,
+  mapName: null,
   setSelectedExit: null,
   setSelectedItem: null,
   smallKeyCount: null,
   smallKeyName: null,
+  speedrunMode: null,
   unsetExit: null,
   updateOpenedExit: null,
 };
@@ -242,6 +276,8 @@ ExtraLocation.propTypes = {
   isMainDungeon: PropTypes.bool.isRequired,
   locationIcon: PropTypes.string.isRequired,
   locationName: PropTypes.string.isRequired,
+  mapCount: PropTypes.number,
+  mapName: PropTypes.string,
   numAvailable: PropTypes.number.isRequired,
   numRemaining: PropTypes.number.isRequired,
   setSelectedExit: PropTypes.func,
@@ -249,6 +285,7 @@ ExtraLocation.propTypes = {
   setSelectedLocation: PropTypes.func.isRequired,
   smallKeyCount: PropTypes.number,
   smallKeyName: PropTypes.string,
+  speedrunMode: PropTypes.bool,
   unsetExit: PropTypes.func,
   updateOpenedExit: PropTypes.func,
   updateOpenedLocation: PropTypes.func.isRequired,

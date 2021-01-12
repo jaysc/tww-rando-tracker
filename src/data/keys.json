@@ -2,16 +2,21 @@
   "DRC Big Key": 1,
   "DRC Small Key": 4,
   "DRC Compass": 1,
+  "DRC Map": 1,
   "FW Big Key": 1,
   "FW Small Key": 1,
   "FW Compass": 1,
+  "FW Map": 1,
   "TotG Big Key": 1,
   "TotG Small Key": 2,
   "TotG Compass": 1,
+  "TotG Map": 1,
   "ET Big Key": 1,
   "ET Small Key": 3,
   "ET Compass": 1,
+  "ET Map": 1,
   "WT Big Key": 1,
   "WT Small Key": 2,
-  "WT Compass": 1
+  "WT Compass": 1,
+  "WT Map": 1
 }

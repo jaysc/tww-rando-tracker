@@ -24,10 +24,12 @@ class Buttons extends React.PureComponent {
       entrancesListOpen,
       onlyProgressLocations,
       singleColorBackground,
+      speedrunMode,
       toggleDisableLogic,
       toggleEntrancesList,
       toggleOnlyProgressLocations,
       toggleSingleColorBackground,
+      toggleSpeedrunMode,
     } = this.props;
 
     const disableLogicText = disableLogic
@@ -41,6 +43,10 @@ class Buttons extends React.PureComponent {
     const singleColorBackgroundText = singleColorBackground
       ? 'Hide Single Color Background'
       : 'Show Single Color Background';
+
+    const speedrunModeText = speedrunMode
+      ? 'Disable Speedrun Mode'
+      : 'Enable Speedrun Mode';
 
     const entrancesListText = entrancesListOpen
       ? 'Close Entrances'
@@ -83,6 +89,12 @@ class Buttons extends React.PureComponent {
         >
           {singleColorBackgroundText}
         </button>
+        <button
+          onClick={toggleSpeedrunMode}
+          type="button"
+        >
+          {speedrunModeText}
+        </button>
       </div>
     );
   }
@@ -94,10 +106,12 @@ Buttons.propTypes = {
   onlyProgressLocations: PropTypes.bool.isRequired,
   saveData: PropTypes.string.isRequired,
   singleColorBackground: PropTypes.bool.isRequired,
+  speedrunMode: PropTypes.bool.isRequired,
   toggleDisableLogic: PropTypes.func.isRequired,
   toggleEntrancesList: PropTypes.func.isRequired,
   toggleOnlyProgressLocations: PropTypes.func.isRequired,
   toggleSingleColorBackground: PropTypes.func.isRequired,
+  toggleSpeedrunMode: PropTypes.func.isRequired,
 };
 
 export default Buttons;
