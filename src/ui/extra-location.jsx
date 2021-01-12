@@ -62,6 +62,32 @@ class ExtraLocation extends React.PureComponent {
     );
   }
 
+  compassItem() {
+    const {
+      clearSelectedItem,
+      compassCount,
+      compassName,
+      decrementItem,
+      incrementItem,
+      setSelectedItem,
+    } = this.props;
+
+    const compassItemImages = _.get(Images.IMAGES, 'COMPASS');
+    return (
+      <div className="dungeon-item compass">
+        <Item
+          clearSelectedItem={clearSelectedItem}
+          decrementItem={decrementItem}
+          images={compassItemImages}
+          incrementItem={incrementItem}
+          setSelectedItem={setSelectedItem}
+          itemCount={compassCount}
+          itemName={compassName}
+        />
+      </div>
+    );
+  }
+
   entrance() {
     const {
       clearSelectedItem,
@@ -105,6 +131,7 @@ class ExtraLocation extends React.PureComponent {
         {this.smallKeyItem()}
         { LogicHelper.isRandomDungeonEntrances() && this.entrance() }
         {this.bigKeyItem()}
+        {this.compassItem()}
       </div>
     );
   }
@@ -184,6 +211,8 @@ ExtraLocation.defaultProps = {
   bigKeyCount: null,
   bigKeyName: null,
   clearSelectedItem: null,
+  compassCount: null,
+  compassName: null,
   decrementItem: null,
   entryCount: null,
   entryName: null,
@@ -202,6 +231,8 @@ ExtraLocation.propTypes = {
   clearSelectedItem: PropTypes.func,
   clearSelectedLocation: PropTypes.func.isRequired,
   color: PropTypes.string.isRequired,
+  compassCount: PropTypes.number,
+  compassName: PropTypes.string,
   decrementItem: PropTypes.func,
   disableLogic: PropTypes.bool.isRequired,
   entryCount: PropTypes.number,

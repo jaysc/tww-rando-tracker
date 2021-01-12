@@ -57,6 +57,9 @@ class ExtraLocationsTable extends React.PureComponent {
       const bigKeyName = LogicHelper.bigKeyName(locationName);
       const bigKeyCount = trackerState.getItemValue(bigKeyName);
 
+      const compassName = LogicHelper.compassName(locationName);
+      const compassCount = trackerState.getItemValue(compassName);
+
       const entryName = LogicHelper.entryName(locationName);
       const entryCount = trackerState.getItemValue(entryName);
 
@@ -67,6 +70,8 @@ class ExtraLocationsTable extends React.PureComponent {
           clearSelectedItem={clearSelectedItem}
           clearSelectedLocation={clearSelectedLocation}
           color={color}
+          compassCount={compassCount}
+          compassName={compassName}
           decrementItem={decrementItem}
           disableLogic={disableLogic}
           entryCount={entryCount}

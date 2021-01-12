@@ -57,6 +57,10 @@ export default class Images {
           1: import('../images/triforcechartopen.png'),
         },
       },
+      COMPASS: {
+        0: import('../images/compass.png'),
+        1: import('../images/compass_a.png'),
+      },
       DUNGEON_CHART_BACKGROUNDS: {
         [LogicHelper.DUNGEONS.DRAGON_ROOST_CAVERN]: import('../images/dungeon_mapfull0.png'),
         [LogicHelper.DUNGEONS.FORBIDDEN_WOODS]: import('../images/dungeon_mapfull1.png'),
@@ -353,6 +357,10 @@ export default class Images {
         },
       },
       ITEMS_TABLE_BACKGROUND: import('../images/trackerbg.png'),
+      MAP: {
+        0: import('../images/map.png'),
+        1: import('../images/map_a.png'),
+      },
       MISC_LOCATIONS: {
         [LogicHelper.MISC_LOCATIONS.MAILBOX]: import('../images/mailbox.png'),
         [LogicHelper.MISC_LOCATIONS.THE_GREAT_SEA]: import('../images/greatsea.png'),
