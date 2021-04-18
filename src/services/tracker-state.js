@@ -1,6 +1,4 @@
-import _, { last } from 'lodash';
-
-import Tracker from '../ui/tracker';
+import _ from 'lodash';
 
 import Locations from './locations';
 import LogicCalculation from './logic-calculation';

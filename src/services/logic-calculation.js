@@ -114,7 +114,7 @@ export default class LogicCalculation {
 
     const tempSphere = parseLogic(requirementsForLocation);
     const sphere = _.isNumber(tempSphere) ? tempSphere + 1 : null;
-    console.log(sphere);
+
     return sphere;
   }
 
@@ -182,11 +182,11 @@ export default class LogicCalculation {
       );
 
       const sphere = LogicCalculation.getSphere(this.state, generalLocation, detailedLocation);
-
+      debugger;
       return {
         location: detailedLocation,
         color,
-        sphere: _.isNumber(sphere) ? sphere : '?',
+        sphere: _.isNumber(sphere) ? sphere : undefined,
       };
     });
   }

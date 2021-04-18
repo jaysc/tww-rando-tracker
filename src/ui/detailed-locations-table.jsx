@@ -59,7 +59,7 @@ class DetailedLocationsTable extends React.PureComponent {
         role="button"
         tabIndex="0"
       >
-        {`[${sphere}] ${location}`}
+        {`[${_.isNumber(sphere) ? sphere : '?'}] ${location}`}
       </div>
     );
 
