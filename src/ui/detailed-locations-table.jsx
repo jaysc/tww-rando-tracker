@@ -83,7 +83,7 @@ class DetailedLocationsTable extends React.PureComponent {
 
     const setCustomTextFunc = () => {
       let customText = null;
-      if (isLocationChecked) {
+      if (isLocationChecked && item) {
         customText = `[${_.isNumber(sphere) ? sphere : '?'}] ${item}`;
       }
       setCustomText(customText);

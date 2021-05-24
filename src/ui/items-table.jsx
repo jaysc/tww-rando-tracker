@@ -101,9 +101,10 @@ class ItemsTable extends React.PureComponent {
     const sphereText = _.reduce(spheres, (textArray, sphere) => {
       if (sphere && sphere.lastLocation) {
         const {
+          generalLocation,
           detailedLocation,
         } = sphere.lastLocation;
-        textArray.push(!_.isNil(detailedLocation) ? `[${detailedLocation}]` : '');
+        textArray.push(`[${generalLocation} | ${detailedLocation}]`);
       }
       return textArray;
     }, []);
