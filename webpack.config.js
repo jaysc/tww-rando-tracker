@@ -28,7 +28,7 @@ module.exports = (env, argv) => {
     devServer: {
       contentBase: basePath,
       compress: true,
-      port: 8080,
+      port: process.env.PORT,
     },
     resolve: {
       extensions: ['.webpack.js', '.js', '.jsx', '.json', '.png'],
