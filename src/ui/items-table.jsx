@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { size } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -43,10 +43,11 @@ class ItemsTable extends React.PureComponent {
       textArray.push(sphere && !_.isNil(sphere.value) ? `[${sphere.value}]` : '');
       return textArray;
     }, []);
+
     const itemInfoText = `${LogicHelper.prettyNameForItem(selectedItem, itemCount)} ${_.join(sphereText, ' ')}`;
 
     return (
-      <span className="item-info">{itemInfoText}</span>
+      <div className="item-info">{itemInfoText}</div>
     );
   }
 
@@ -85,6 +86,30 @@ class ItemsTable extends React.PureComponent {
       >
         {this.item(songName)}
       </SongNotes>
+    );
+  }
+
+  itemInfoSub() {
+    const { selectedItem } = this.state;
+    const { trackerState } = this.props;
+
+    if (_.isNil(selectedItem)) {
+      return null;
+    }
+
+    const spheres = _.get(trackerState, ['items', selectedItem, 'sphere']);
+    const sphereText = _.reduce(spheres, (textArray, sphere) => {
+      if (sphere && sphere.lastLocation) {
+        const {
+          detailedLocation,
+        } = sphere.lastLocation;
+        textArray.push(!_.isNil(detailedLocation) ? `[${detailedLocation}]` : '');
+      }
+      return textArray;
+    }, []);
+
+    return (
+      <div className="info" style={{ fontSize: '12px' }}>{sphereText}</div>
     );
   }
 
@@ -182,7 +207,10 @@ class ItemsTable extends React.PureComponent {
             </div>
           </div>
         </div>
-        {this.itemInfo()}
+        <div style={{ display: 'flex', alignSelf: 'center' }}>
+          {this.itemInfo()}
+          {this.itemInfoSub()}
+        </div>
       </div>
     );
   }

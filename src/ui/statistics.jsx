@@ -1,3 +1,4 @@
+import _, { last } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -11,6 +12,19 @@ class Statistics extends React.PureComponent {
       onlyProgressLocations,
       singleColorBackground,
     } = this.props;
+
+    const lastLocationInfo = () => {
+      const lastLocation = _.get(logic, ['state', 'lastLocation']);
+      if (lastLocation) {
+        const {
+          generalLocation,
+          detailedLocation,
+        } = lastLocation;
+
+        return detailedLocation;
+      }
+      return '';
+    };
 
     return (
       <div className={`statistics ${singleColorBackground ? 'single-color' : ''}`}>
@@ -48,6 +62,9 @@ class Statistics extends React.PureComponent {
             )}
           </tbody>
         </table>
+        <div className="info">
+          {`Last Location: ${lastLocationInfo() ?? ''}`}
+        </div>
       </div>
     );
   }

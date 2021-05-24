@@ -52,6 +52,7 @@ export default class LogicCalculation {
       generalLocation,
       detailedLocation,
     );
+    debugger;
 
     const getSphere = (item) => {
       let itemValue;
@@ -182,7 +183,7 @@ export default class LogicCalculation {
       );
 
       const sphere = LogicCalculation.getSphere(this.state, generalLocation, detailedLocation);
-      debugger;
+
       return {
         location: detailedLocation,
         color,

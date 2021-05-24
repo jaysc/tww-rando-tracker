@@ -633,16 +633,20 @@ button:hover:enabled {
   }
 }
 
+.info {
+  color: white;
+  font-size: 20px;
+  text-align: center;
+}
+
 .statistics {
   float: left;
-  width: 620px;
   background-color: rgba(80, 80, 80, 0.85);
-  height: 85px;
   margin: 0 0 8px 0;
   padding: 6px 5px 5px 5px;
   white-space: normal;
   color: #bbbbbb;
-  font-size: 18px;
+  font-size: 16px;
 
   &.single-color {
     background-color: rgba(80, 80, 80, 1);
@@ -651,7 +655,6 @@ button:hover:enabled {
   table {
     border-spacing: 0;
     display: inline;
-    float: left;
 
     &.left-table {
       width: 45%;
@@ -659,10 +662,6 @@ button:hover:enabled {
 
     &.right-table {
       width: 55%;
-    }
-
-    tr {
-      height: 28px;
     }
 
     td {
