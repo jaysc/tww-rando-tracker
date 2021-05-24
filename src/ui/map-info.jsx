@@ -71,10 +71,25 @@ class MapInfo extends React.PureComponent {
     if (_.isNil(itemInfoText)) {
       return null;
     }
-
     return (
       <div className="map-item-info-container">
         <span className="map-item-info">{itemInfoText}</span>
+      </div>
+    );
+  }
+
+  customText() {
+    const {
+      customText,
+    } = this.props;
+
+    if (_.isNil(customText)) {
+      return null;
+    }
+
+    return (
+      <div className="map-info-container">
+        <div className="map-info">{customText}</div>
       </div>
     );
   }
@@ -84,12 +99,14 @@ class MapInfo extends React.PureComponent {
       <>
         {this.mapInfo()}
         {this.mapItemInfo()}
+        {this.customText()}
       </>
     );
   }
 }
 
 MapInfo.defaultProps = {
+  customText: null,
   selectedExit: null,
   selectedItem: null,
   selectedLocation: null,
@@ -97,6 +114,7 @@ MapInfo.defaultProps = {
 };
 
 MapInfo.propTypes = {
+  customText: PropTypes.string,
   disableLogic: PropTypes.bool.isRequired,
   logic: PropTypes.instanceOf(LogicCalculation).isRequired,
   onlyProgressLocations: PropTypes.bool.isRequired,

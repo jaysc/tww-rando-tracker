@@ -47,12 +47,31 @@ export default class LogicCalculation {
     UNAVAILABLE_LOCATION: 'unavailable-location',
   };
 
+  static getLocationItem(state, generalLocation, detailedLocation) {
+    let locationItem = null;
+    _.forEach(state.items, (item, itemName) => {
+      _.forEach(item.sphere, (sphere) => {
+        if (sphere) {
+          const {
+            lastLocation,
+          } = sphere;
+          if (!_.isNil(lastLocation)
+            && lastLocation.generalLocation === generalLocation
+            && lastLocation.detailedLocation === detailedLocation) {
+            locationItem = itemName;
+          }
+        }
+      });
+    });
+
+    return locationItem;
+  }
+
   static getSphere(state, generalLocation, detailedLocation) {
     const requirementsForLocation = LogicHelper.requirementsForLocation(
       generalLocation,
       detailedLocation,
     );
-    debugger;
 
     const getSphere = (item) => {
       let itemValue;
@@ -183,11 +202,14 @@ export default class LogicCalculation {
       );
 
       const sphere = LogicCalculation.getSphere(this.state, generalLocation, detailedLocation);
-
+      debugger;
       return {
         location: detailedLocation,
         color,
         sphere: _.isNumber(sphere) ? sphere : undefined,
+        item: isChecked
+          ? LogicCalculation.getLocationItem(this.state, generalLocation, detailedLocation)
+          : null,
       };
     });
   }

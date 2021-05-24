@@ -17,6 +17,7 @@ class LocationsTable extends React.PureComponent {
     super(props);
 
     this.state = {
+      customText: null,
       selectedExit: null,
       selectedItem: null,
       selectedLocation: null,
@@ -28,6 +29,8 @@ class LocationsTable extends React.PureComponent {
     this.clearSelectedItem = this.clearSelectedItem.bind(this);
     this.setSelectedLocation = this.setSelectedLocation.bind(this);
     this.clearSelectedLocation = this.clearSelectedLocation.bind(this);
+    this.setCustomText = this.setCustomText.bind(this);
+    this.clearCustomText = this.clearCustomText.bind(this);
   }
 
   setSelectedExit(exitName) {
@@ -42,6 +45,18 @@ class LocationsTable extends React.PureComponent {
     this.setState({
       selectedLocation: locationName,
       selectedLocationIsDungeon: isDungeon,
+    });
+  }
+
+  setCustomText(customText) {
+    this.setState({
+      customText,
+    });
+  }
+
+  clearCustomText() {
+    this.setState({
+      customText: null,
     });
   }
 
@@ -78,6 +93,7 @@ class LocationsTable extends React.PureComponent {
     } = this.props;
 
     const {
+      customText,
       selectedExit,
       selectedItem,
       selectedLocation,
@@ -115,6 +131,8 @@ class LocationsTable extends React.PureComponent {
           onlyProgressLocations={onlyProgressLocations}
           openedLocation={openedLocation}
           openedLocationIsDungeon={openedLocationIsDungeon}
+          setCustomText={this.setCustomText}
+          clearCustomText={this.clearCustomText}
           toggleLocationChecked={toggleLocationChecked}
         />
       );
@@ -128,6 +146,7 @@ class LocationsTable extends React.PureComponent {
           incrementItem={incrementItem}
           logic={logic}
           onlyProgressLocations={onlyProgressLocations}
+          setCustomText={this.setCustomText}
           setSelectedExit={this.setSelectedExit}
           setSelectedItem={this.setSelectedItem}
           setSelectedLocation={this.setSelectedLocation}
@@ -143,6 +162,7 @@ class LocationsTable extends React.PureComponent {
       <div className="chart-map-container">
         {chartElement}
         <MapInfo
+          customText={customText}
           disableLogic={disableLogic}
           logic={logic}
           onlyProgressLocations={onlyProgressLocations}
@@ -181,6 +201,7 @@ class LocationsTable extends React.PureComponent {
           incrementItem={incrementItem}
           logic={logic}
           onlyProgressLocations={onlyProgressLocations}
+          setCustomText={this.setCustomText}
           setSelectedExit={this.setSelectedExit}
           setSelectedItem={this.setSelectedItem}
           setSelectedLocation={this.setSelectedLocation}

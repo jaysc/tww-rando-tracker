@@ -34,11 +34,14 @@ class DetailedLocationsTable extends React.PureComponent {
       location,
       color,
       sphere,
+      item,
     } = locationInfo;
 
     const {
+      clearCustomText,
       disableLogic,
       openedLocation,
+      setCustomText,
       toggleLocationChecked,
     } = this.props;
 
@@ -78,8 +81,22 @@ class DetailedLocationsTable extends React.PureComponent {
       );
     }
 
+    const setCustomTextFunc = () => {
+      let customText = null;
+      if (isLocationChecked) {
+        customText = `[${_.isNumber(sphere) ? sphere : '?'}] ${item}`;
+      }
+      setCustomText(customText);
+    };
+
     return (
-      <td key={location}>
+      <td
+        key={location}
+        onMouseOver={setCustomTextFunc}
+        onFocus={setCustomTextFunc}
+        onMouseOut={clearCustomText}
+        onBlur={clearCustomText}
+      >
         {locationContent}
       </td>
     );
@@ -177,6 +194,7 @@ class DetailedLocationsTable extends React.PureComponent {
 }
 
 DetailedLocationsTable.propTypes = {
+  clearCustomText: PropTypes.func.isRequired,
   clearOpenedMenus: PropTypes.func.isRequired,
   clearRaceModeBannedLocations: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
@@ -184,6 +202,7 @@ DetailedLocationsTable.propTypes = {
   onlyProgressLocations: PropTypes.bool.isRequired,
   openedLocation: PropTypes.string.isRequired,
   openedLocationIsDungeon: PropTypes.bool.isRequired,
+  setCustomText: PropTypes.func.isRequired,
   toggleLocationChecked: PropTypes.func.isRequired,
 };
 
