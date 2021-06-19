@@ -22,9 +22,10 @@ export default class TrackerController {
     LogicTweaks.applyTweaks();
 
     LogicHelper.initialize();
+    const defaultTrackerState = TrackerState.default();
 
     return this.refreshState(
-      TrackerState.default(),
+      defaultTrackerState,
     );
   }
 

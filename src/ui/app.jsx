@@ -37,6 +37,11 @@ export default () => {
           path="/tracker/load/:permalink"
           render={renderTracker(true)}
         />
+        <Route
+          exact
+          path="/tracker/online/:permalink/:gameId"
+          render={renderTracker(false)}
+        />
       </Switch>
     </HashRouter>
   );

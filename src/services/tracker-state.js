@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import DatabaseData from './database-data';
 import Locations from './locations';
 import LogicCalculation from './logic-calculation';
 import LogicHelper from './logic-helper';
@@ -27,7 +28,7 @@ export default class TrackerState {
       {},
     );
     newState.locationsChecked = Locations.mapLocations(() => false);
-
+    newState.databaseData = new DatabaseData();
     return newState;
   }
 
@@ -62,6 +63,7 @@ export default class TrackerState {
       entrances: this.entrances,
       items: this.items,
       locationsChecked: this.locationsChecked,
+      databaseData: this.databaseData,
     };
   }
 
@@ -106,6 +108,7 @@ export default class TrackerState {
 
   incrementItem(itemName) {
     const newState = this._clone();
+    newState.databaseData.incrementItem(itemName);
 
     const originalItemCount = this.getItemValue(itemName);
     let newItemCount = 1 + originalItemCount;
@@ -141,6 +144,7 @@ export default class TrackerState {
 
   decrementItem(itemName) {
     const newState = this._clone();
+    newState.databaseData.decrementItem(itemName);
 
     const originalItemCount = this.getItemValue(itemName);
     let newItemCount = originalItemCount - 1;
@@ -187,6 +191,7 @@ export default class TrackerState {
 
   toggleLocationChecked(generalLocation, detailedLocation) {
     const newState = this._clone();
+    newState.databaseData.toggleLocationChecked(generalLocation, detailedLocation);
 
     const isChecked = this.isLocationChecked(generalLocation, detailedLocation);
     _.set(newState.locationsChecked, [generalLocation, detailedLocation], !isChecked);
@@ -203,6 +208,7 @@ export default class TrackerState {
     newState.items = _.clone(this.items);
     newState.locationsChecked = _.cloneDeep(this.locationsChecked);
     newState.lastLocation = _.clone(this.lastLocation);
+    newState.databaseData = _.cloneDeep(this.databaseData);
 
     return newState;
   }

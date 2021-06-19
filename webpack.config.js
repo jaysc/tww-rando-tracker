@@ -1,6 +1,7 @@
 const path = require('path');
 
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const sass = require('sass');
@@ -38,6 +39,9 @@ module.exports = (env, argv) => {
       new FaviconsWebpackPlugin(faviconsWebpackPluginSettings),
       new HtmlWebpackPlugin({
         template: './src/index.html',
+      }),
+      new Dotenv({
+        path: `./.env${env.file ? `.${env.file}` : ''}`,
       }),
       ...(isProduction ? [new WorkboxPlugin.GenerateSW({
         clientsClaim: true,

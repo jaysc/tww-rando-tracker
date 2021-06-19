@@ -4,6 +4,7 @@ import React from 'react';
 import Loader from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 
+import Firebase from '../services/firebase';
 import LogicHelper from '../services/logic-helper';
 import TrackerController from '../services/tracker-controller';
 
@@ -50,11 +51,12 @@ class Tracker extends React.PureComponent {
 
   async initialize() {
     await Images.importImages();
+    await Firebase.initialize();
 
     const {
       loadProgress,
       match: {
-        params: { permalink },
+        params: { permalink, gameId },
       },
     } = this.props;
 
@@ -83,6 +85,11 @@ class Tracker extends React.PureComponent {
         const decodedPermalink = decodeURIComponent(permalink);
 
         initialData = await TrackerController.initializeFromPermalink(decodedPermalink);
+
+        if (gameId) {
+          initialData.trackerState.databaseData.setup(permalink, gameId);
+          initialData.trackerState.databaseData.load();
+        }
       } catch (err) {
         toast.error('Tracker could not be initialized!');
 
@@ -150,6 +157,7 @@ class Tracker extends React.PureComponent {
     } = TrackerController.refreshState(newTrackerState);
 
     Storage.saveToStorage(saveData);
+    trackerState.databaseData.save();
 
     this.setState({
       logic,
@@ -332,6 +340,7 @@ Tracker.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       permalink: PropTypes.string.isRequired,
+      gameId: PropTypes.string,
     }).isRequired,
   }).isRequired,
 };
