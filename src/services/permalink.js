@@ -23,7 +23,7 @@ export default class Permalink {
     [this.OPTIONS.SWORD_MODE]: SWORD_MODE_OPTIONS,
   };
 
-  static DEFAULT_PERMALINK = 'MS45LjAAU2VlZAAHAQMADgBAAwAAAAAAAQAA';
+  static DEFAULT_PERMALINK = 'MS45LjAAQQAFCyIAD3DAAgAAAAAAAQAA';
 
   static decode(permalinkString) {
     const binaryString = BinaryString.fromBase64(permalinkString);
