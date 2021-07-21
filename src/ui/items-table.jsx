@@ -31,14 +31,19 @@ class ItemsTable extends React.PureComponent {
 
   itemInfo() {
     const { selectedItem } = this.state;
-    const { trackerState } = this.props;
-
+    const { spheres, trackerState, trackSpheres } = this.props;
     if (_.isNil(selectedItem)) {
       return null;
     }
 
     const itemCount = trackerState.getItemValue(selectedItem);
-    const itemInfoText = LogicHelper.prettyNameForItem(selectedItem, itemCount);
+
+    let sphereText = null;
+    if (trackSpheres) {
+      sphereText = `${_.map(spheres.sphereforItem(selectedItem), ({ sphere }) => `[${_.isNil(sphere) ? '?' : sphere}]`)} `;
+    }
+
+    const itemInfoText = `${_.isNull(sphereText) ? '' : sphereText}${LogicHelper.prettyNameForItem(selectedItem, itemCount)}`;
 
     return (
       <span className="item-info">
@@ -60,7 +65,7 @@ class ItemsTable extends React.PureComponent {
     const itemImages = _.get(Images.IMAGES, ['ITEMS', itemName]);
     let locations = [];
     if (showLocationTooltip && trackSpheres) {
-      locations = trackerState.getLocationsForItem(itemName);
+      locations = spheres.sphereforItem(itemName);
     }
 
     return (

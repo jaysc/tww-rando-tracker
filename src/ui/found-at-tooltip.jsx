@@ -6,21 +6,9 @@ import Spheres from '../services/spheres';
 
 class FoundAtTooltip extends React.PureComponent {
   render() {
-    const { locations, spheres } = this.props;
+    const { locations } = this.props;
 
-    const sortedLocations = _.sortBy(
-      locations,
-      (location) => {
-        const { generalLocation, detailedLocation } = location;
-        const sphereForLocation = spheres.sphereForLocation(generalLocation, detailedLocation);
-
-        _.set(location, 'sphere', sphereForLocation);
-
-        return _.isNil(sphereForLocation) ? Number.MAX_SAFE_INTEGER : sphereForLocation;
-      },
-    );
-
-    const locationsList = _.map(sortedLocations, (
+    const locationsList = _.map(locations, (
       { generalLocation, detailedLocation, sphere },
     ) => (
       <li key={`${generalLocation}-${detailedLocation}`}>
@@ -42,7 +30,6 @@ FoundAtTooltip.propTypes = {
     generalLocation: PropTypes.string.isRequired,
     detailedLocation: PropTypes.string.isRequired,
   })).isRequired,
-  spheres: PropTypes.instanceOf(Spheres).isRequired,
 };
 
 export default FoundAtTooltip;
