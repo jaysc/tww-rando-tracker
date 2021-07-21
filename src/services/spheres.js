@@ -19,6 +19,23 @@ export default class Spheres {
     return _.get(this.spheres, [generalLocation, detailedLocation]);
   }
 
+  sphereforItem(itemName) {
+    const locations = this.state.getLocationsForItem(itemName);
+    const sortedLocations = _.sortBy(
+      locations,
+      (location) => {
+        const { generalLocation, detailedLocation } = location;
+        const sphereForLocation = this.sphereForLocation(generalLocation, detailedLocation);
+
+        _.set(location, 'sphere', sphereForLocation);
+
+        return _.isNil(sphereForLocation) ? Number.MAX_SAFE_INTEGER : sphereForLocation;
+      },
+    );
+
+    return sortedLocations;
+  }
+
   _calculate() {
     this.temporaryState = TrackerState.default();
     this.spheres = Locations.mapLocations(() => null);
