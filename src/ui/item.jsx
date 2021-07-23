@@ -69,11 +69,11 @@ class Item extends React.PureComponent {
   }
 
   render() {
-    const { locations, spheres } = this.props;
+    const { locations } = this.props;
 
     if (!_.isEmpty(locations)) {
       return (
-        <Tooltip tooltipContent={<FoundAtTooltip locations={locations} spheres={spheres} />}>
+        <Tooltip tooltipContent={<FoundAtTooltip locations={locations} />}>
           {this.item()}
         </Tooltip>
       );

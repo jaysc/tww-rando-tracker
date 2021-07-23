@@ -40,7 +40,7 @@ class ItemsTable extends React.PureComponent {
 
     let sphereText = null;
     if (trackSpheres) {
-      sphereText = `${_.map(spheres.sphereforItem(selectedItem), ({ sphere }) => `[${_.isNil(sphere) ? '?' : sphere}]`)} `;
+      sphereText = `${_.map(spheres.sphereforItemLocation(selectedItem), ({ sphere }) => `[${_.isNil(sphere) ? '?' : sphere}]`)} `;
     }
 
     const itemInfoText = `${_.isNull(sphereText) ? '' : sphereText}${LogicHelper.prettyNameForItem(selectedItem, itemCount)}`;
@@ -65,7 +65,7 @@ class ItemsTable extends React.PureComponent {
     const itemImages = _.get(Images.IMAGES, ['ITEMS', itemName]);
     let locations = [];
     if (showLocationTooltip && trackSpheres) {
-      locations = spheres.sphereforItem(itemName);
+      locations = spheres.sphereforItemLocation(itemName);
     }
 
     return (
@@ -87,7 +87,7 @@ class ItemsTable extends React.PureComponent {
     const { trackerState, trackSpheres, spheres } = this.props;
 
     const songCount = trackerState.getItemValue(songName);
-    const locations = trackSpheres ? trackerState.getLocationsForItem(songName) : [];
+    const locations = trackSpheres ? spheres.sphereforItemLocation(songName) : [];
 
     return (
       <SongNotes

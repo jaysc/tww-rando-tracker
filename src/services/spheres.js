@@ -19,7 +19,7 @@ export default class Spheres {
     return _.get(this.spheres, [generalLocation, detailedLocation]);
   }
 
-  sphereforItem(itemName) {
+  sphereforItemLocation(itemName) {
     const locations = this.state.getLocationsForItem(itemName);
     const sortedLocations = _.sortBy(
       locations,
