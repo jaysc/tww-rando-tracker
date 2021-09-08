@@ -1,5 +1,6 @@
 const path = require('path');
 
+const Dotenv = require('dotenv-webpack');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const sass = require('sass');
@@ -38,6 +39,9 @@ module.exports = (env, argv) => {
       clean: true,
     },
     plugins: [
+      new Dotenv({
+        path: `./.env${env.file ? `.${env.file}` : ''}`,
+      }),
       new FaviconsWebpackPlugin(faviconsWebpackPluginSettings),
       new HtmlWebpackPlugin({
         template: './src/index.html',

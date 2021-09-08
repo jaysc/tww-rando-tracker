@@ -1,5 +1,5 @@
 import {
-  getAuth, signInAnonymously, useAuthEmulator,
+  getAuth, signInAnonymously, connectAuthEmulator,
 } from 'firebase/auth';
 
 export default class Authentication {
@@ -11,7 +11,7 @@ export default class Authentication {
     const auth = getAuth();
 
     if (isLocal) {
-      useAuthEmulator(auth, 'http://localhost:9099');
+      connectAuthEmulator(auth, 'http://localhost:9099');
     }
 
     await signInAnonymously(auth)

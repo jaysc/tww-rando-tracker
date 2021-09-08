@@ -4,6 +4,7 @@ import React from 'react';
 import Loader from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 
+import Firebase from '../services/firebase';
 import LogicHelper from '../services/logic-helper';
 import TrackerController from '../services/tracker-controller';
 
@@ -72,9 +73,10 @@ class Tracker extends React.PureComponent {
     const {
       loadProgress,
       match: {
-        params: { permalink },
+        params: { permalink, gameId },
       },
     } = this.props;
+    Firebase.initialize(permalink, gameId);
 
     let initialData;
 
@@ -449,6 +451,7 @@ Tracker.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.exact({
       permalink: PropTypes.string.isRequired,
+      gameId: PropTypes.string,
     }).isRequired,
   }).isRequired,
 };

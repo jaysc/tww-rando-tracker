@@ -1,29 +1,24 @@
 import {
-  getDatabase, ref, set, useDatabaseEmulator, onValue,
+  getDatabase, ref, set, connectDatabaseEmulator, onValue,
 } from 'firebase/database';
 
 export default class Database {
-  static async saveAsync(key, saveData) {
-    console.log(`Saving ${key}`);
-    console.log(saveData);
-    set(ref(Database.db, key), saveData);
-  }
-
-  static subscribe(key, callback) {
-    return onValue(ref(Database.db, key), (snapshot) => {
-      if (callback) {
-        callback(snapshot.val());
-      }
-    });
-  }
-
-  static async initialize(isLocal) {
+  static async initialize(isLocal, permaId, gameId) {
     if (isLocal) {
       this.db = getDatabase();
       console.log('Using Emulator');
-      useDatabaseEmulator(this.db, 'localhost', 9000);
+      connectDatabaseEmulator(this.db, 'localhost', 9000);
     } else {
       this.db = getDatabase();
     }
+
+    this.permaId = permaId;
+    this.gameId = gameId;
+  }
+
+  static async save(key, value) {
+    console.log(`Database save key: ${key}`);
+    console.log(`Database save value: ${value}`);
+    set(ref(this.db, key), value);
   }
 }

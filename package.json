@@ -7,7 +7,7 @@
     "build": "webpack",
     "build:production": "webpack --mode=production",
     "lint": "eslint --max-warnings 0 \"src/**/*.jsx\" \"src/**/*.js\" \"*.js\"",
-    "start": "webpack serve",
+    "start": "webpack serve --env file=develop",
     "test": "jest --maxWorkers=5"
   },
   "repository": {
@@ -15,6 +15,7 @@
     "url": "git+https://github.com/wooferzfg/tww-rando-tracker.git"
   },
   "dependencies": {
+    "firebase": "^9.0.0",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "memoizee": "^0.4.15",
@@ -37,6 +38,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^6.2.0",
+    "dotenv-webpack": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-import": "^2.24.2",

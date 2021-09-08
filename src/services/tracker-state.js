@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import DatabaseLogic from './database-logic';
 import Locations from './locations';
 import LogicHelper from './logic-helper';
 
@@ -19,6 +20,8 @@ export default class TrackerState {
     );
     newState.itemsForLocations = Locations.mapLocations(() => null);
     newState.locationsChecked = Locations.mapLocations(() => false);
+
+    DatabaseLogic.initItems(newState.items);
 
     return newState;
   }
@@ -61,6 +64,7 @@ export default class TrackerState {
       newItemCount = LogicHelper.startingItemCount(itemName);
     }
     _.set(newState.items, itemName, newItemCount);
+    DatabaseLogic.saveItem(itemName, newItemCount);
 
     return newState;
   }

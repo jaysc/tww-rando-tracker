@@ -15,11 +15,11 @@ const config = {
 const isLocal = location.hostname === 'localhost';
 
 export default class Firebase {
-  static initialize() {
+  static initialize(permaId, gameId) {
     initializeApp(config);
 
     const auth = Authentication.initialize(isLocal);
-    const database = Database.initialize(isLocal);
+    const database = Database.initialize(isLocal, permaId, gameId);
 
     console.log(config.databaseURL);
 
