@@ -2,6 +2,8 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Authentication from '../services/authentication';
+import DatabaseLogic from '../services/database-logic';
 import LogicCalculation from '../services/logic-calculation';
 import LogicHelper from '../services/logic-helper';
 import Permalink from '../services/permalink';
@@ -57,6 +59,7 @@ class DetailedLocationsTable extends React.PureComponent {
     } = locationInfo;
 
     const {
+      databaseState,
       disableLogic,
       openedLocation,
       spheres,
@@ -83,9 +86,11 @@ class DetailedLocationsTable extends React.PureComponent {
       locationText = location;
     }
 
+    const coopLocation = DatabaseLogic.coopFound(databaseState, openedLocation, location);
+
     const locationElement = (
       <div
-        className={`detail-span ${color} ${fontSizeClassName}`}
+        className={`detail-span ${color} ${fontSizeClassName} ${coopLocation}`}
         onClick={toggleLocationFunc}
         onKeyDown={KeyDownWrapper.onSpaceKey(toggleLocationFunc)}
         role="button"
@@ -221,6 +226,7 @@ class DetailedLocationsTable extends React.PureComponent {
 DetailedLocationsTable.propTypes = {
   clearOpenedMenus: PropTypes.func.isRequired,
   clearRaceModeBannedLocations: PropTypes.func.isRequired,
+  databaseState: PropTypes.object.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   logic: PropTypes.instanceOf(LogicCalculation).isRequired,
   onlyProgressLocations: PropTypes.bool.isRequired,

@@ -4,6 +4,7 @@ import React from 'react';
 import Loader from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 
+import DatabaseLogic from '../services/database-logic';
 import Firebase from '../services/firebase';
 import LogicHelper from '../services/logic-helper';
 import TrackerController from '../services/tracker-controller';
@@ -60,6 +61,7 @@ class Tracker extends React.PureComponent {
     this.updateEntranceForExit = this.updateEntranceForExit.bind(this);
     this.updateOpenedExit = this.updateOpenedExit.bind(this);
     this.updateOpenedLocation = this.updateOpenedLocation.bind(this);
+    this.updateDatabaseState = this.updateDatabaseState.bind(this);
   }
 
   async initialize() {
@@ -76,7 +78,7 @@ class Tracker extends React.PureComponent {
         params: { permalink, gameId },
       },
     } = this.props;
-    Firebase.initialize(permalink, gameId);
+    await Firebase.initialize(permalink, gameId);
 
     let initialData;
 
@@ -117,13 +119,22 @@ class Tracker extends React.PureComponent {
       trackerState,
     } = initialData;
 
+    const databaseState = {};
+    DatabaseLogic.initSubscribeItems(databaseState, trackerState, this.updateDatabaseState);
+    DatabaseLogic.initSubscribeLocations(databaseState, trackerState, this.updateDatabaseState);
+
     this.setState({
       isLoading: false,
       logic,
       saveData,
       spheres,
       trackerState,
+      databaseState,
     });
+  }
+
+  updateDatabaseState(databaseState) {
+    this.setState({ databaseState });
   }
 
   incrementItem(itemName) {
@@ -331,6 +342,7 @@ class Tracker extends React.PureComponent {
     const {
       colorPickerOpen,
       colors,
+      databaseState,
       disableLogic,
       entrancesListOpen,
       isLoading,
@@ -377,6 +389,7 @@ class Tracker extends React.PureComponent {
               backgroundColor={extraLocationsBackground}
               clearOpenedMenus={this.clearOpenedMenus}
               clearRaceModeBannedLocations={this.clearRaceModeBannedLocations}
+              databaseState={databaseState}
               decrementItem={this.decrementItem}
               disableLogic={disableLogic}
               entrancesListOpen={entrancesListOpen}

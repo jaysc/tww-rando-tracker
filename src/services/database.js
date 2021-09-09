@@ -1,5 +1,5 @@
 import {
-  getDatabase, ref, set, connectDatabaseEmulator, onValue,
+  getDatabase, ref, set, connectDatabaseEmulator, onChildChanged,
 } from 'firebase/database';
 
 export default class Database {
@@ -14,6 +14,11 @@ export default class Database {
 
     this.permaId = permaId;
     this.gameId = gameId;
+  }
+
+  static async onChildChanged(key, callback) {
+    const itemRef = ref(this.db, key);
+    onChildChanged(itemRef, callback);
   }
 
   static async save(key, value) {

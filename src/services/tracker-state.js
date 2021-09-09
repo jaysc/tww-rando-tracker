@@ -21,8 +21,6 @@ export default class TrackerState {
     newState.itemsForLocations = Locations.mapLocations(() => null);
     newState.locationsChecked = Locations.mapLocations(() => false);
 
-    DatabaseLogic.initItems(newState.items);
-
     return newState;
   }
 
@@ -64,8 +62,8 @@ export default class TrackerState {
       newItemCount = LogicHelper.startingItemCount(itemName);
     }
     _.set(newState.items, itemName, newItemCount);
-    DatabaseLogic.saveItem(itemName, newItemCount);
 
+    DatabaseLogic.saveItem(itemName, newItemCount);
     return newState;
   }
 
@@ -115,6 +113,8 @@ export default class TrackerState {
 
     const isChecked = this.isLocationChecked(generalLocation, detailedLocation);
     _.set(newState.locationsChecked, [generalLocation, detailedLocation], !isChecked);
+
+    DatabaseLogic.saveLocation(generalLocation, detailedLocation, !isChecked);
 
     return newState;
   }

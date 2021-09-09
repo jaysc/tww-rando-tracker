@@ -62,6 +62,7 @@ class LocationsTable extends React.PureComponent {
       clearOpenedMenus,
       clearRaceModeBannedLocations,
       decrementItem,
+      databaseState,
       disableLogic,
       entrancesListOpen,
       incrementItem,
@@ -113,6 +114,7 @@ class LocationsTable extends React.PureComponent {
         <DetailedLocationsTable
           clearOpenedMenus={clearOpenedMenus}
           clearRaceModeBannedLocations={clearRaceModeBannedLocations}
+          databaseState={databaseState}
           disableLogic={disableLogic}
           logic={logic}
           onlyProgressLocations={onlyProgressLocations}
@@ -168,6 +170,7 @@ class LocationsTable extends React.PureComponent {
     const {
       backgroundColor,
       decrementItem,
+      databaseState,
       disableLogic,
       incrementItem,
       logic,
@@ -218,6 +221,7 @@ LocationsTable.propTypes = {
   backgroundColor: PropTypes.string,
   clearOpenedMenus: PropTypes.func.isRequired,
   clearRaceModeBannedLocations: PropTypes.func.isRequired,
+  databaseState: PropTypes.object.isRequired,
   decrementItem: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   entrancesListOpen: PropTypes.bool.isRequired,
