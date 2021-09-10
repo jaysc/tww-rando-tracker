@@ -10,47 +10,96 @@ export default class DatabaseLogic {
     });
   }
 
-  static initSubscribeItems(databaseState, trackerState, updateDatabaseState) {
+  static initSubscribeItems(trackerState, updateDatabaseState) {
     _.forEach(trackerState.items, (value, item) => {
       const itemCallback = (snapshot) => {
-        const newDatabaseState = _.cloneDeep(databaseState);
+        console.log('item callback');
         console.log(item);
         console.log(snapshot.key);
-        console.log(snapshot.val());
-        _.set(newDatabaseState, ['items', item, snapshot.key], snapshot.val());
-        updateDatabaseState(newDatabaseState);
+        const newData = snapshot.val();
+        console.log(newData);
+        updateDatabaseState(_.set({}, ['items', item, snapshot.key], snapshot.val()));
       };
 
       const key = `${Database.permaId}/${Database.gameId}/items/${item}`;
+      Database.onChildAdded(key, itemCallback);
       Database.onChildChanged(key, itemCallback);
     });
   }
 
-  static initSubscribeLocations(databaseState, trackerState, updateDatabaseState) {
+  static initSubscribeLocations(trackerState, updateDatabaseState) {
     _.forEach(trackerState.locationsChecked, (detailedLocations, generalLocation) => {
       _.forEach(detailedLocations, (value, detailedLocation) => {
         const locationCallback = (snapshot) => {
-          const newDatabaseState = _.cloneDeep(databaseState);
           console.log(`${generalLocation} - ${detailedLocation}`);
           console.log(snapshot.key);
-          console.log(snapshot.val());
-          _.set(newDatabaseState, ['locations', generalLocation, detailedLocation, snapshot.key], snapshot.val());
-          updateDatabaseState(newDatabaseState);
+          const newData = snapshot.val();
+          console.log(newData);
+          updateDatabaseState(_.set({}, ['locations', generalLocation, detailedLocation, snapshot.key], snapshot.val()));
         };
 
         const key = `${Database.permaId}/${Database.gameId}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
+        Database.onChildAdded(key, locationCallback);
         Database.onChildChanged(key, locationCallback);
       });
     });
   }
 
-  static formatLocationName(locationName) {
-    return locationName.replace('.', '');
+  static async initLoad(updateDatabaseState) {
+    const key = `${Database.permaId}/${Database.gameId}`;
+    return new Promise((resolve) => {
+      Database.get(key).then((snapshot) => {
+        console.log('Loading data');
+        const latestData = snapshot.val();
+        console.log(latestData);
+        if (latestData) {
+          updateDatabaseState(latestData);
+          resolve(latestData);
+        } else {
+          resolve({});
+        }
+      });
+    });
   }
 
-  static saveItem(item, itemCount) {
-    const key = `${Database.permaId}/${Database.gameId}/items/${item}/${Authentication.userId}`;
-    const value = { itemCount };
+  static resolveDatabaseItems(databaseState, trackerState) {
+    const items = {};
+    _.forEach(_.get(databaseState, 'items'), (itemValue, itemName) => {
+      _.forEach(itemValue, (value, authId) => {
+        if (authId === Authentication.userId) {
+          _.set(items, itemName, value.itemCount);
+        }
+      });
+    });
+    _.merge(trackerState.items, items);
+  }
+
+  static resolveDatabaseLocations(databaseState, trackerState) {
+    const locationsChecked = {};
+    _.forEach(_.get(databaseState, 'locations'), (detailedLocationList, generalLocation) => {
+      _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
+        _.forEach(detailedLocationListValue, (value, authId) => {
+          if (authId === Authentication.userId) {
+            _.set(locationsChecked, [generalLocation, this.unFormatLocationName(detailedLocation)], value.isChecked);
+          }
+        });
+      });
+    });
+    _.merge(trackerState.locationsChecked, locationsChecked);
+  }
+
+  static formatLocationName(locationName) {
+    return locationName.replace('.', '~');
+  }
+
+  static unFormatLocationName(locationName) {
+    return locationName.replace('~', '.');
+  }
+
+  static saveItem(trackerState, itemName, generalLocation, detailedLocation, isChecked) {
+    const itemCount = trackerState.getItemValue(itemName);
+    const key = `${Database.permaId}/${Database.gameId}/items/${itemName}/${Authentication.userId}`;
+    const value = { itemCount, locations: _.set({}, [generalLocation, this.formatLocationName(detailedLocation), 'isChecked'], isChecked) };
     Database.save(key, value);
   }
 

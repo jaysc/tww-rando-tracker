@@ -174,8 +174,10 @@ class Tracker extends React.PureComponent {
         generalLocation,
         detailedLocation,
       );
+      DatabaseLogic.saveItem(newTrackerState, itemName, generalLocation, detailedLocation, true);
+    } else {
+      DatabaseLogic.saveItem(newTrackerState, itemName, null, null, true);
     }
-
     this.updateTrackerState(newTrackerState);
   }
 
