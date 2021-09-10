@@ -77,6 +77,7 @@ export default class TrackerState {
     }
     _.set(newState.items, itemName, newItemCount);
 
+    DatabaseLogic.saveItem(itemName, newItemCount);
     return newState;
   }
 

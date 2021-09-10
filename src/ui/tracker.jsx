@@ -120,8 +120,8 @@ class Tracker extends React.PureComponent {
     } = initialData;
 
     const databaseState = {};
-    DatabaseLogic.initSubscribeItems(databaseState, trackerState, this.updateDatabaseState);
-    DatabaseLogic.initSubscribeLocations(databaseState, trackerState, this.updateDatabaseState);
+    DatabaseLogic.initSubscribeItems(trackerState, this.updateDatabaseState);
+    DatabaseLogic.initSubscribeLocations(trackerState, this.updateDatabaseState);
 
     this.setState({
       isLoading: false,
@@ -133,8 +133,26 @@ class Tracker extends React.PureComponent {
     });
   }
 
-  updateDatabaseState(databaseState) {
-    this.setState({ databaseState });
+  updateDatabaseState(newData) {
+    const {
+      databaseState,
+      trackerState,
+    } = this.state;
+    const newDatabaseState = _.merge(databaseState, newData);
+
+    const newTrackerState = _.clone(trackerState);
+
+    if (_.get(newData, 'locations')) {
+      DatabaseLogic.resolveDatabaseLocations(newData, newTrackerState);
+    }
+
+    if (_.get(newData, 'items')) {
+      DatabaseLogic.resolveDatabaseItems(newData, newTrackerState);
+    }
+    this.setState({
+      databaseState: newDatabaseState,
+      trackerState: newTrackerState,
+    });
   }
 
   incrementItem(itemName) {
