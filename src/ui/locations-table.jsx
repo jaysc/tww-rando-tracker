@@ -131,6 +131,7 @@ class LocationsTable extends React.PureComponent {
         <SeaChart
           clearSelectedItem={this.clearSelectedItem}
           clearSelectedLocation={this.clearSelectedLocation}
+          databaseState={databaseState}
           decrementItem={decrementItem}
           disableLogic={disableLogic}
           incrementItem={incrementItem}
@@ -190,6 +191,7 @@ class LocationsTable extends React.PureComponent {
           backgroundColor={backgroundColor}
           clearSelectedItem={this.clearSelectedItem}
           clearSelectedLocation={this.clearSelectedLocation}
+          databaseState={databaseState}
           decrementItem={decrementItem}
           disableLogic={disableLogic}
           incrementItem={incrementItem}

@@ -15,6 +15,7 @@ class ExtraLocation extends React.PureComponent {
   compassItem() {
     const {
       clearSelectedItem,
+      databaseState,
       decrementItem,
       incrementItem,
       locationName,
@@ -38,6 +39,7 @@ class ExtraLocation extends React.PureComponent {
       <div className="dungeon-item compass">
         <Item
           clearSelectedItem={clearSelectedItem}
+          databaseState={databaseState}
           decrementItem={decrementItem}
           images={compassImages}
           incrementItem={incrementItem}
@@ -54,6 +56,7 @@ class ExtraLocation extends React.PureComponent {
   dungeonMapItem() {
     const {
       clearSelectedItem,
+      databaseState,
       decrementItem,
       incrementItem,
       locationName,
@@ -77,6 +80,7 @@ class ExtraLocation extends React.PureComponent {
       <div className="dungeon-item dungeon-map">
         <Item
           clearSelectedItem={clearSelectedItem}
+          databaseState={databaseState}
           decrementItem={decrementItem}
           images={dungeonMapImages}
           incrementItem={incrementItem}
@@ -93,6 +97,7 @@ class ExtraLocation extends React.PureComponent {
   smallKeyItem() {
     const {
       clearSelectedItem,
+      databaseState,
       decrementItem,
       incrementItem,
       locationName,
@@ -116,6 +121,7 @@ class ExtraLocation extends React.PureComponent {
       <div className="dungeon-item small-key">
         <Item
           clearSelectedItem={clearSelectedItem}
+          databaseState={databaseState}
           decrementItem={decrementItem}
           images={smallKeyImages}
           incrementItem={incrementItem}
@@ -132,6 +138,7 @@ class ExtraLocation extends React.PureComponent {
   bigKeyItem() {
     const {
       clearSelectedItem,
+      databaseState,
       decrementItem,
       incrementItem,
       locationName,
@@ -155,6 +162,7 @@ class ExtraLocation extends React.PureComponent {
       <div className="dungeon-item big-key">
         <Item
           clearSelectedItem={clearSelectedItem}
+          databaseState={databaseState}
           decrementItem={decrementItem}
           images={bigKeyImages}
           incrementItem={incrementItem}
@@ -171,6 +179,7 @@ class ExtraLocation extends React.PureComponent {
   entrance() {
     const {
       clearSelectedItem,
+      databaseState,
       locationName,
       setSelectedExit,
       trackerState,
@@ -197,6 +206,7 @@ class ExtraLocation extends React.PureComponent {
       <div className="dungeon-item dungeon-entry">
         <Item
           clearSelectedItem={clearSelectedItem}
+          databaseState={databaseState}
           images={entranceImages}
           incrementItem={incrementItemFunc}
           itemCount={entryCount}
@@ -326,6 +336,7 @@ class ExtraLocation extends React.PureComponent {
 ExtraLocation.propTypes = {
   clearSelectedItem: PropTypes.func.isRequired,
   clearSelectedLocation: PropTypes.func.isRequired,
+  databaseState: PropTypes.object.isRequired,
   decrementItem: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   incrementItem: PropTypes.func.isRequired,

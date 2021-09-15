@@ -15,6 +15,7 @@ class SeaChart extends React.PureComponent {
     const {
       clearSelectedItem,
       clearSelectedLocation,
+      databaseState,
       decrementItem,
       disableLogic,
       incrementItem,
@@ -35,6 +36,7 @@ class SeaChart extends React.PureComponent {
       <Sector
         clearSelectedItem={clearSelectedItem}
         clearSelectedLocation={clearSelectedLocation}
+        databaseState={databaseState}
         decrementItem={decrementItem}
         disableLogic={disableLogic}
         key={island}
@@ -74,6 +76,7 @@ class SeaChart extends React.PureComponent {
 SeaChart.propTypes = {
   clearSelectedItem: PropTypes.func.isRequired,
   clearSelectedLocation: PropTypes.func.isRequired,
+  databaseState: PropTypes.object.isRequired,
   decrementItem: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   incrementItem: PropTypes.func.isRequired,

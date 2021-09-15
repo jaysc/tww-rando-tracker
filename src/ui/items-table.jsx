@@ -49,6 +49,7 @@ class ItemsTable extends React.PureComponent {
 
   item(itemName, showLocationTooltip = true) {
     const {
+      databaseState,
       decrementItem,
       incrementItem,
       spheres,
@@ -67,6 +68,7 @@ class ItemsTable extends React.PureComponent {
     return (
       <Item
         clearSelectedItem={this.clearSelectedItem}
+        databaseState={databaseState}
         decrementItem={decrementItem}
         images={itemImages}
         incrementItem={incrementItem}
@@ -206,6 +208,7 @@ ItemsTable.defaultProps = {
 
 ItemsTable.propTypes = {
   backgroundColor: PropTypes.string,
+  databaseState: PropTypes.object.isRequired,
   decrementItem: PropTypes.func.isRequired,
   incrementItem: PropTypes.func.isRequired,
   spheres: PropTypes.instanceOf(Spheres).isRequired,

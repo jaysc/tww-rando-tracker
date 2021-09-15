@@ -1,5 +1,5 @@
 import {
-  getDatabase, ref, set, connectDatabaseEmulator, onChildAdded, onChildChanged, get,
+  getDatabase, ref, set, connectDatabaseEmulator, onChildAdded, onChildChanged, get, update,
 } from 'firebase/database';
 
 export default class Database {
@@ -30,6 +30,10 @@ export default class Database {
     console.log(`Database save key: ${key}`);
     console.log(`Database save value: ${value}`);
     set(ref(this.db, key), value);
+  }
+
+  static update(key, value) {
+    update(ref(this.db, key), value);
   }
 
   static async get(key) {

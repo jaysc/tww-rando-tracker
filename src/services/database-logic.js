@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import Authentication from './authentication';
 import Database from './database';
+import LogicHelper from './logic-helper';
 
 export default class DatabaseLogic {
   static initItems(items) {
@@ -18,7 +19,7 @@ export default class DatabaseLogic {
         console.log(snapshot.key);
         const newData = snapshot.val();
         console.log(newData);
-        updateDatabaseState(_.set({}, ['items', item, snapshot.key], snapshot.val()));
+        updateDatabaseState(_.set({}, ['items', item, snapshot.key], newData));
       };
 
       const key = `${Database.permaId}/${Database.gameId}/items/${item}`;
@@ -35,12 +36,29 @@ export default class DatabaseLogic {
           console.log(snapshot.key);
           const newData = snapshot.val();
           console.log(newData);
-          updateDatabaseState(_.set({}, ['locations', generalLocation, detailedLocation, snapshot.key], snapshot.val()));
+          updateDatabaseState(_.set({}, ['locations', generalLocation, detailedLocation, snapshot.key], newData));
         };
 
         const key = `${Database.permaId}/${Database.gameId}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
         Database.onChildAdded(key, locationCallback);
         Database.onChildChanged(key, locationCallback);
+      });
+    });
+  }
+
+  static initSubscribeSphere(trackerState, updateDatabaseState) {
+    _.forEach(trackerState.locationsChecked, (detailedLocations, generalLocation) => {
+      _.forEach(detailedLocations, (value, detailedLocation) => {
+        const key = `${Database.permaId}/${Database.gameId}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
+        const callback = (snapshot) => {
+          console.log(`Sphere - ${generalLocation} - ${detailedLocation}`);
+          console.log(snapshot.key);
+          const newData = snapshot.val();
+          console.log(newData);
+          updateDatabaseState(_.set({}, ['spheres', generalLocation, detailedLocation, snapshot.key], newData));
+        };
+        Database.onChildAdded(key, callback);
+        Database.onChildChanged(key, callback);
       });
     });
   }
@@ -76,16 +94,36 @@ export default class DatabaseLogic {
 
   static resolveDatabaseLocations(databaseState, trackerState) {
     const locationsChecked = {};
+    const itemsForLocations = {};
     _.forEach(_.get(databaseState, 'locations'), (detailedLocationList, generalLocation) => {
       _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
         _.forEach(detailedLocationListValue, (value, authId) => {
           if (authId === Authentication.userId) {
-            _.set(locationsChecked, [generalLocation, this.unFormatLocationName(detailedLocation)], value.isChecked);
+            console.log(value);
+            _.set(locationsChecked,
+              [generalLocation, this.unFormatLocationName(detailedLocation)], value.isChecked);
+            _.set(itemsForLocations,
+              [generalLocation, this.unFormatLocationName(detailedLocation)], value.itemName);
           }
         });
       });
     });
     _.merge(trackerState.locationsChecked, locationsChecked);
+    _.merge(trackerState.itemsForLocations, itemsForLocations);
+  }
+
+  static resolveSpheres(newData, newSpheres) {
+    const spheres = {};
+    _.forEach(_.get(newData, 'spheres'), (detailedLocationList, generalLocation) => {
+      _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
+        _.forEach(detailedLocationListValue, (value, authId) => {
+          if (authId === Authentication.userId) {
+            _.set(spheres, ['spheres', generalLocation, this.unFormatLocationName(detailedLocation)], value.sphere);
+          }
+        });
+      });
+    });
+    _.merge(newSpheres, spheres);
   }
 
   static formatLocationName(locationName) {
@@ -96,17 +134,29 @@ export default class DatabaseLogic {
     return locationName.replace('~', '.');
   }
 
-  static saveItem(trackerState, itemName, generalLocation, detailedLocation, isChecked) {
-    const itemCount = trackerState.getItemValue(itemName);
+  static saveItem(trackerState, itemName) {
+    let itemCount = trackerState.getItemValue(itemName);
+    itemCount = itemCount !== 0 ? itemCount : null;
     const key = `${Database.permaId}/${Database.gameId}/items/${itemName}/${Authentication.userId}`;
-    const value = { itemCount, locations: _.set({}, [generalLocation, this.formatLocationName(detailedLocation), 'isChecked'], isChecked) };
-    Database.save(key, value);
+    Database.save(key, { itemCount });
   }
 
   static saveLocation(generalLocation, detailedLocation, isChecked) {
     const key = `${Database.permaId}/${Database.gameId}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
     const value = { isChecked };
     Database.save(key, value);
+  }
+
+  static saveItemsForLocations(generalLocation, detailedLocation, itemName) {
+    const key = `${Database.permaId}/${Database.gameId}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
+    Database.update(key, { itemName });
+  }
+
+  static saveSphere(generalLocation, detailedLocation, sphere) {
+    if (sphere !== 0 && LogicHelper.isProgressLocation(generalLocation, detailedLocation)) {
+      const key = `${Database.permaId}/${Database.gameId}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
+      Database.save(key, { sphere });
+    }
   }
 
   static coopFound(databaseState, openedLocation, location) {
@@ -118,5 +168,36 @@ export default class DatabaseLogic {
       coopLocation = 'coop-found';
     }
     return coopLocation;
+  }
+
+  static otherUsersItem(databaseState, itemName) {
+    const result = [];
+    _.forEach(_.get(databaseState, 'locations'), (detailedLocationList, generalLocation) => {
+      _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
+        _.forEach(detailedLocationListValue, (value, authId) => {
+          if (authId !== Authentication.userId
+            && _.get(value, 'itemName') === itemName
+            && _.get(value, 'isChecked')) {
+            result.push(`${authId} - ${generalLocation} | ${detailedLocation}`);
+          }
+        });
+      });
+    });
+    return result;
+  }
+
+  static otherUsersItemForLocation(databaseState, generalLocation, detailedLocation) {
+    const result = [];
+
+    const detailedLocationValue = _.get(databaseState, ['locations', generalLocation, detailedLocation]);
+    _.forEach(detailedLocationValue, (value, authId) => {
+      if (authId !== Authentication.userId
+        && _.get(value, 'itemName')
+        && _.get(value, 'isChecked')) {
+        result.push(`${authId} - ${_.get(value, 'itemName')}`);
+      }
+    });
+
+    return result;
   }
 }

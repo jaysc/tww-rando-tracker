@@ -4,7 +4,7 @@ import React from 'react';
 
 class RequirementsTooltip extends React.PureComponent {
   render() {
-    const { requirements } = this.props;
+    const { requirements, otherUserItems } = this.props;
 
     const requirementsList = _.map(requirements, (elements, rowIndex) => (
       <li key={rowIndex}>
@@ -22,13 +22,24 @@ class RequirementsTooltip extends React.PureComponent {
         <ul>
           {requirementsList}
         </ul>
+        {!_.isEmpty(otherUserItems) && (
+        <>
+          <div className="tooltip-title">Other Users Item at Location</div>
+          <div>{otherUserItems}</div>
+        </>
+        )}
       </div>
     );
   }
 }
 
+RequirementsTooltip.defaultProps = {
+  otherUserItems: null,
+};
+
 RequirementsTooltip.propTypes = {
   requirements: PropTypes.arrayOf(PropTypes.array).isRequired,
+  otherUserItems: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default RequirementsTooltip;

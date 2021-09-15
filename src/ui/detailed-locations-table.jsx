@@ -2,7 +2,6 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Authentication from '../services/authentication';
 import DatabaseLogic from '../services/database-logic';
 import LogicCalculation from '../services/logic-calculation';
 import LogicHelper from '../services/logic-helper';
@@ -19,22 +18,25 @@ import Tooltip from './tooltip';
 class DetailedLocationsTable extends React.PureComponent {
   static NUM_ROWS = 13;
 
-  requirementsTooltip(generalLocation, detailedLocation) {
+  requirementsTooltip(generalLocation, detailedLocation, otherUserItems) {
     const { logic } = this.props;
 
     const requirements = logic.formattedRequirementsForLocation(generalLocation, detailedLocation);
 
     return (
-      <RequirementsTooltip requirements={requirements} />
+      <RequirementsTooltip
+        requirements={requirements}
+        otherUserItems={otherUserItems}
+      />
     );
   }
 
-  itemTooltip(generalLocation, detailedLocation) {
+  itemTooltip(generalLocation, detailedLocation, otherUserItems) {
     const { trackerState } = this.props;
 
     const itemForLocation = trackerState.getItemForLocation(generalLocation, detailedLocation);
 
-    if (_.isNil(itemForLocation)) {
+    if (_.isNil(itemForLocation) && _.isNil(otherUserItems)) {
       return null;
     }
 
@@ -42,8 +44,18 @@ class DetailedLocationsTable extends React.PureComponent {
 
     return (
       <div className="tooltip">
-        <div className="tooltip-title">Item at Location</div>
-        <div>{prettyItemName}</div>
+        {prettyItemName && (
+        <>
+          <div className="tooltip-title">Item at Location</div>
+          <div>{prettyItemName}</div>
+        </>
+        )}
+        {!_.isEmpty(otherUserItems) && (
+        <>
+          <div className="tooltip-title">Other Users Item at Location</div>
+          <div>{otherUserItems}</div>
+        </>
+        )}
       </div>
     );
   }
@@ -102,11 +114,16 @@ class DetailedLocationsTable extends React.PureComponent {
 
     const isLocationChecked = color === LogicCalculation.LOCATION_COLORS.CHECKED_LOCATION;
 
+    const otherUserItems = _.map(DatabaseLogic
+      .otherUsersItemForLocation(databaseState, openedLocation, location),
+    (itemName) => LogicHelper.prettyNameForItem(itemName, null));
+
     let locationContent;
+
     if (disableLogic || isLocationChecked) {
       let itemTooltip = null;
       if (trackSpheres) {
-        itemTooltip = this.itemTooltip(openedLocation, location);
+        itemTooltip = this.itemTooltip(openedLocation, location, otherUserItems);
       }
 
       locationContent = (
@@ -115,7 +132,8 @@ class DetailedLocationsTable extends React.PureComponent {
         </Tooltip>
       );
     } else {
-      const requirementsTooltip = this.requirementsTooltip(openedLocation, location);
+      const requirementsTooltip = this
+        .requirementsTooltip(openedLocation, location, otherUserItems);
 
       locationContent = (
         <Tooltip tooltipContent={requirementsTooltip}>
@@ -146,7 +164,6 @@ class DetailedLocationsTable extends React.PureComponent {
       openedLocationIsDungeon ? 'DUNGEON_CHART_BACKGROUNDS' : 'ISLAND_CHART_BACKGROUNDS',
       openedLocation,
     ]);
-
     const detailedLocations = logic.locationsList(
       openedLocation,
       {

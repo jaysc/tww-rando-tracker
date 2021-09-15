@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import DatabaseLogic from './database-logic';
 import Locations from './locations';
 import LogicCalculation from './logic-calculation';
 import LogicHelper from './logic-helper';
@@ -51,6 +52,7 @@ export default class Spheres {
 
   _updateSphereForLocation(generalLocation, detailedLocation) {
     _.set(this.spheres, [generalLocation, detailedLocation], this.currentSphere);
+    DatabaseLogic.saveSphere(generalLocation, detailedLocation, this.currentSphere);
   }
 
   _isEntranceAdded(dungeonOrCaveName) {

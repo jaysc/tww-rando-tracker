@@ -61,7 +61,8 @@ class Tracker extends React.PureComponent {
     this.updateEntranceForExit = this.updateEntranceForExit.bind(this);
     this.updateOpenedExit = this.updateOpenedExit.bind(this);
     this.updateOpenedLocation = this.updateOpenedLocation.bind(this);
-    this.updateDatabaseState = this.updateDatabaseState.bind(this);
+    this.updateTrackerStateFromDatabase = this.updateTrackerStateFromDatabase.bind(this);
+    this.updateSpheresForDatabase = this.updateSpheresForDatabase.bind(this);
   }
 
   async initialize() {
@@ -120,8 +121,9 @@ class Tracker extends React.PureComponent {
     } = initialData;
 
     const databaseState = {};
-    DatabaseLogic.initSubscribeItems(trackerState, this.updateDatabaseState);
-    DatabaseLogic.initSubscribeLocations(trackerState, this.updateDatabaseState);
+    DatabaseLogic.initSubscribeItems(trackerState, this.updateTrackerStateFromDatabase);
+    DatabaseLogic.initSubscribeSphere(trackerState, this.updateSpheresForDatabase);
+    DatabaseLogic.initSubscribeLocations(trackerState, this.updateTrackerStateFromDatabase);
 
     this.setState({
       isLoading: false,
@@ -133,15 +135,14 @@ class Tracker extends React.PureComponent {
     });
   }
 
-  updateDatabaseState(newData) {
+  updateTrackerStateFromDatabase(newData) {
     const {
       databaseState,
       trackerState,
     } = this.state;
     const newDatabaseState = _.merge(databaseState, newData);
 
-    const newTrackerState = _.clone(trackerState);
-
+    const newTrackerState = _.cloneDeep(trackerState);
     if (_.get(newData, 'locations')) {
       DatabaseLogic.resolveDatabaseLocations(newData, newTrackerState);
     }
@@ -149,9 +150,26 @@ class Tracker extends React.PureComponent {
     if (_.get(newData, 'items')) {
       DatabaseLogic.resolveDatabaseItems(newData, newTrackerState);
     }
+
+    this.updateTrackerState(newTrackerState);
     this.setState({
       databaseState: newDatabaseState,
-      trackerState: newTrackerState,
+    });
+  }
+
+  updateSpheresForDatabase(newData) {
+    const {
+      databaseState,
+      spheres,
+    } = this.state;
+    const newDatabaseState = _.merge(databaseState, newData);
+    const newSpheres = _.clone(spheres);
+
+    DatabaseLogic.resolveSpheres(newData, newSpheres);
+
+    this.setState({
+      databaseState: newDatabaseState,
+      spheres: newSpheres,
     });
   }
 
@@ -163,6 +181,7 @@ class Tracker extends React.PureComponent {
 
     let newTrackerState = trackerState.incrementItem(itemName);
 
+    DatabaseLogic.saveItem(newTrackerState, itemName);
     if (!_.isNil(lastLocation)) {
       const {
         generalLocation,
@@ -174,10 +193,10 @@ class Tracker extends React.PureComponent {
         generalLocation,
         detailedLocation,
       );
-      DatabaseLogic.saveItem(newTrackerState, itemName, generalLocation, detailedLocation, true);
-    } else {
-      DatabaseLogic.saveItem(newTrackerState, itemName, null, null, true);
+
+      DatabaseLogic.saveItemsForLocations(generalLocation, detailedLocation, itemName);
     }
+
     this.updateTrackerState(newTrackerState);
   }
 
@@ -185,6 +204,8 @@ class Tracker extends React.PureComponent {
     const { trackerState } = this.state;
 
     const newTrackerState = trackerState.decrementItem(itemName);
+
+    DatabaseLogic.saveItem(newTrackerState, itemName);
 
     this.updateTrackerState(newTrackerState);
   }
@@ -399,6 +420,7 @@ class Tracker extends React.PureComponent {
           <div className="tracker">
             <ItemsTable
               backgroundColor={itemsTableBackground}
+              databaseState={databaseState}
               decrementItem={this.decrementItem}
               incrementItem={this.incrementItem}
               spheres={spheres}

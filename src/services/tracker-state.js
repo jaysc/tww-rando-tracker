@@ -124,7 +124,6 @@ export default class TrackerState {
 
   getLocationsForItem(itemName) {
     const locationsForItem = [];
-
     _.forEach(this.itemsForLocations, (generalLocationData, generalLocation) => {
       _.forEach(generalLocationData, (itemAtLocation, detailedLocation) => {
         if (itemAtLocation === itemName) {
