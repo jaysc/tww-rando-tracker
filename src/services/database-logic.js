@@ -140,7 +140,7 @@ export default class DatabaseLogic {
 
   static saveSphere(generalLocation, detailedLocation, sphere, databaseState) {
     if (sphere !== 0 && LogicHelper.isProgressLocation(generalLocation, detailedLocation)) {
-      const oldSphere = _.get(databaseState, ['spheres', generalLocation, detailedLocation, Authentication.authId]);
+      const oldSphere = _.get(databaseState, ['spheres', generalLocation, detailedLocation, Authentication.userId]);
       if (!oldSphere || oldSphere !== sphere) {
         const key = `${this.gamePath()}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
         Database.save(key, { sphere });

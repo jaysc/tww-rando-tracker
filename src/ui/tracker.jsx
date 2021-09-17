@@ -81,7 +81,7 @@ class Tracker extends React.PureComponent {
       },
     } = this.props;
     await Firebase.initialize(permalink, gameId);
-
+    console.log('Firebase loaded');
     let initialData;
 
     if (loadProgress) {

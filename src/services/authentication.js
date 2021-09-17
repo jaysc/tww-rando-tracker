@@ -8,19 +8,21 @@ export default class Authentication {
   }
 
   static async initialize(isLocal) {
-    const auth = getAuth();
+    return new Promise((resolve, reject) => {
+      const auth = getAuth();
+      if (isLocal) {
+        connectAuthEmulator(auth, 'http://localhost:9099');
+      }
 
-    if (isLocal) {
-      connectAuthEmulator(auth, 'http://localhost:9099');
-    }
-
-    await signInAnonymously(auth)
-      .then((cred) => {
-        this.userId = cred.user.uid;
-        console.log(`signedIn with userId: ${this.userId}`);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      signInAnonymously(auth)
+        .then((cred) => {
+          this.userId = cred.user.uid;
+          console.log(`signedIn with userId: ${this.userId}`);
+          resolve();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
   }
 }

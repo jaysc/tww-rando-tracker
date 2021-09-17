@@ -4,6 +4,7 @@ import {
 
 import Authentication from './authentication';
 import Database from './database';
+import DatabaseLogic from './database-logic';
 
 const config = {
   apiKey: process.env.REACT_PUBLIC_FIREBASE_API_KEY,

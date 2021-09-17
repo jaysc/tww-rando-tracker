@@ -4,16 +4,19 @@ import {
 
 export default class Database {
   static async initialize(isLocal, permaId, gameId) {
-    if (isLocal) {
-      this.db = getDatabase();
-      console.log('Using Emulator');
-      connectDatabaseEmulator(this.db, 'localhost', 9000);
-    } else {
-      this.db = getDatabase();
-    }
+    return new Promise((resolve, reject) => {
+      if (isLocal) {
+        this.db = getDatabase();
+        console.log('Using Emulator');
+        connectDatabaseEmulator(this.db, 'localhost', 9000);
+      } else {
+        this.db = getDatabase();
+      }
 
-    this.permaId = permaId;
-    this.gameId = gameId;
+      this.permaId = permaId;
+      this.gameId = gameId;
+      resolve();
+    });
   }
 
   static onChildChanged(key, callback) {
