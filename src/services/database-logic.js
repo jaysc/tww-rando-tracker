@@ -5,6 +5,8 @@ import Database from './database';
 import LogicHelper from './logic-helper';
 
 export default class DatabaseLogic {
+  static gamePath = () => `games/${Database.permaId}/${Database.gameId}`;
+
   static initItems(items) {
     _.forEach(items, (value, item) => {
       this.saveItem(item, value);
@@ -22,7 +24,7 @@ export default class DatabaseLogic {
         updateDatabaseState(_.set({}, ['items', item, snapshot.key], newData));
       };
 
-      const key = `${Database.permaId}/${Database.gameId}/items/${item}`;
+      const key = `${this.gamePath()}/items/${item}`;
       Database.onChildAdded(key, itemCallback);
       Database.onChildChanged(key, itemCallback);
     });
@@ -39,7 +41,7 @@ export default class DatabaseLogic {
           updateDatabaseState(_.set({}, ['locations', generalLocation, detailedLocation, snapshot.key], newData));
         };
 
-        const key = `${Database.permaId}/${Database.gameId}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
+        const key = `${this.gamePath()}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
         Database.onChildAdded(key, locationCallback);
         Database.onChildChanged(key, locationCallback);
       });
@@ -49,7 +51,7 @@ export default class DatabaseLogic {
   static initSubscribeSphere(trackerState, updateDatabaseState) {
     _.forEach(trackerState.locationsChecked, (detailedLocations, generalLocation) => {
       _.forEach(detailedLocations, (value, detailedLocation) => {
-        const key = `${Database.permaId}/${Database.gameId}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
+        const key = `${this.gamePath()}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
         const callback = (snapshot) => {
           console.log(`Sphere - ${generalLocation} - ${detailedLocation}`);
           console.log(snapshot.key);
@@ -135,27 +137,29 @@ export default class DatabaseLogic {
   }
 
   static saveItem(trackerState, itemName) {
-    let itemCount = trackerState.getItemValue(itemName);
-    itemCount = itemCount !== 0 ? itemCount : null;
-    const key = `${Database.permaId}/${Database.gameId}/items/${itemName}/${Authentication.userId}`;
-    Database.save(key, { itemCount });
+    const itemCount = trackerState.getItemValue(itemName);
+    const key = `${this.gamePath()}/items/${itemName}/${Authentication.userId}`;
+    Database.save(key, { itemCount: itemCount !== 0 ? itemCount : null });
   }
 
   static saveLocation(generalLocation, detailedLocation, isChecked) {
-    const key = `${Database.permaId}/${Database.gameId}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
-    const value = { isChecked };
+    const key = `${this.gamePath()}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
+    const value = { isChecked: isChecked ? true : null };
     Database.save(key, value);
   }
 
   static saveItemsForLocations(generalLocation, detailedLocation, itemName) {
-    const key = `${Database.permaId}/${Database.gameId}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
+    const key = `${this.gamePath()}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
     Database.update(key, { itemName });
   }
 
-  static saveSphere(generalLocation, detailedLocation, sphere) {
+  static saveSphere(generalLocation, detailedLocation, sphere, currentSpheres) {
     if (sphere !== 0 && LogicHelper.isProgressLocation(generalLocation, detailedLocation)) {
-      const key = `${Database.permaId}/${Database.gameId}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
-      Database.save(key, { sphere });
+      const oldSphere = _.get(currentSpheres, [generalLocation, detailedLocation]);
+      if (!oldSphere || oldSphere !== sphere) {
+        const key = `${this.gamePath()}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
+        Database.save(key, { sphere });
+      }
     }
   }
 

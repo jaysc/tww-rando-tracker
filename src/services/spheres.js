@@ -52,7 +52,7 @@ export default class Spheres {
 
   _updateSphereForLocation(generalLocation, detailedLocation) {
     _.set(this.spheres, [generalLocation, detailedLocation], this.currentSphere);
-    DatabaseLogic.saveSphere(generalLocation, detailedLocation, this.currentSphere);
+    DatabaseLogic.saveSphere(generalLocation, detailedLocation, this.currentSphere, this.spheres);
   }
 
   _isEntranceAdded(dungeonOrCaveName) {
