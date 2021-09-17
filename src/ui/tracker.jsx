@@ -115,15 +115,14 @@ class Tracker extends React.PureComponent {
     }
 
     const {
-      databaseState,
       logic,
       saveData,
       spheres,
       trackerState,
     } = initialData;
 
+    const databaseState = new DatabaseState();
     DatabaseLogic.initSubscribeItems(trackerState, this.updateTrackerStateFromDatabase);
-    DatabaseLogic.initSubscribeSphere(trackerState, this.updateSpheresForDatabase);
     DatabaseLogic.initSubscribeLocations(trackerState, this.updateTrackerStateFromDatabase);
 
     this.setState({

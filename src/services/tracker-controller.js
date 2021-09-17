@@ -58,13 +58,11 @@ export default class TrackerController {
   }
 
   static refreshState(newState) {
-    const databaseState = new DatabaseState();
     const logic = new LogicCalculation(newState);
-    const spheres = new Spheres(newState, databaseState);
+    const spheres = new Spheres(newState);
     const saveData = this._getSaveData(newState);
 
     return {
-      databaseState,
       logic,
       saveData,
       spheres,

@@ -11,13 +11,11 @@ export default class Spheres {
     this.state = trackerState;
     this.databaseState = databaseState;
     this.spheres = null;
-    this.initial = true;
   }
 
   sphereForLocation(generalLocation, detailedLocation) {
     if (_.isNil(this.spheres)) {
       this._calculate();
-      this.initial = false;
     }
 
     return _.get(this.spheres, [generalLocation, detailedLocation]);
@@ -55,10 +53,6 @@ export default class Spheres {
 
   _updateSphereForLocation(generalLocation, detailedLocation) {
     _.set(this.spheres, [generalLocation, detailedLocation], this.currentSphere);
-    if (!this.initial) {
-      DatabaseLogic.saveSphere(generalLocation,
-        detailedLocation, this.currentSphere, this.databaseState);
-    }
   }
 
   _isEntranceAdded(dungeonOrCaveName) {
