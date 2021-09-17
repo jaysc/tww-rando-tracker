@@ -2,6 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import DatabaseState from '../services/database-state';
 import LogicCalculation from '../services/logic-calculation';
 import Spheres from '../services/spheres';
 import TrackerState from '../services/tracker-state';
@@ -223,7 +224,7 @@ LocationsTable.propTypes = {
   backgroundColor: PropTypes.string,
   clearOpenedMenus: PropTypes.func.isRequired,
   clearRaceModeBannedLocations: PropTypes.func.isRequired,
-  databaseState: PropTypes.object.isRequired,
+  databaseState: PropTypes.instanceOf(DatabaseState).isRequired,
   decrementItem: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   entrancesListOpen: PropTypes.bool.isRequired,

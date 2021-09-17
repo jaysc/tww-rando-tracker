@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import DatabaseState from '../services/database-state';
 import LogicCalculation from '../services/logic-calculation';
 import LogicHelper from '../services/logic-helper';
 import Spheres from '../services/spheres';
@@ -89,7 +90,7 @@ ExtraLocationsTable.propTypes = {
   backgroundColor: PropTypes.string,
   clearSelectedItem: PropTypes.func.isRequired,
   clearSelectedLocation: PropTypes.func.isRequired,
-  databaseState: PropTypes.object.isRequired,
+  databaseState: PropTypes.instanceOf(DatabaseState).isRequired,
   decrementItem: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   incrementItem: PropTypes.func.isRequired,

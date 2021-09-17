@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import DatabaseLogic from '../services/database-logic';
+import DatabaseState from '../services/database-state';
 import LogicCalculation from '../services/logic-calculation';
 import LogicHelper from '../services/logic-helper';
 import Permalink from '../services/permalink';
@@ -36,7 +37,7 @@ class DetailedLocationsTable extends React.PureComponent {
 
     const itemForLocation = trackerState.getItemForLocation(generalLocation, detailedLocation);
 
-    if (_.isNil(itemForLocation) && _.isNil(otherUserItems)) {
+    if (_.isNil(itemForLocation) && _.isEmpty(otherUserItems)) {
       return null;
     }
 
@@ -98,7 +99,7 @@ class DetailedLocationsTable extends React.PureComponent {
       locationText = location;
     }
 
-    const coopLocation = DatabaseLogic.coopFound(databaseState, openedLocation, location);
+    const coopLocation = databaseState.coopFound(openedLocation, location);
 
     const locationElement = (
       <div
@@ -114,10 +115,9 @@ class DetailedLocationsTable extends React.PureComponent {
 
     const isLocationChecked = color === LogicCalculation.LOCATION_COLORS.CHECKED_LOCATION;
 
-    const otherUserItems = _.map(DatabaseLogic
-      .otherUsersItemForLocation(databaseState, openedLocation, location),
+    const otherUserItems = _.map(databaseState
+      .otherUsersItemForLocation(openedLocation, location),
     (itemName) => LogicHelper.prettyNameForItem(itemName, null));
-
     let locationContent;
 
     if (disableLogic || isLocationChecked) {
@@ -243,7 +243,7 @@ class DetailedLocationsTable extends React.PureComponent {
 DetailedLocationsTable.propTypes = {
   clearOpenedMenus: PropTypes.func.isRequired,
   clearRaceModeBannedLocations: PropTypes.func.isRequired,
-  databaseState: PropTypes.object.isRequired,
+  databaseState: PropTypes.instanceOf(DatabaseState).isRequired,
   disableLogic: PropTypes.bool.isRequired,
   logic: PropTypes.instanceOf(LogicCalculation).isRequired,
   onlyProgressLocations: PropTypes.bool.isRequired,

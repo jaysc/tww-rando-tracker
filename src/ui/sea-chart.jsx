@@ -2,6 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import DatabaseState from '../services/database-state';
 import LogicCalculation from '../services/logic-calculation';
 import LogicHelper from '../services/logic-helper';
 import Spheres from '../services/spheres';
@@ -76,7 +77,7 @@ class SeaChart extends React.PureComponent {
 SeaChart.propTypes = {
   clearSelectedItem: PropTypes.func.isRequired,
   clearSelectedLocation: PropTypes.func.isRequired,
-  databaseState: PropTypes.object.isRequired,
+  databaseState: PropTypes.instanceOf(DatabaseState).isRequired,
   decrementItem: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   incrementItem: PropTypes.func.isRequired,

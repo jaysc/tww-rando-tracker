@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import DatabaseLogic from '../services/database-logic';
+import DatabaseState from '../services/database-state';
 import LogicHelper from '../services/logic-helper';
 import Spheres from '../services/spheres';
 import TrackerState from '../services/tracker-state';
@@ -65,7 +66,7 @@ class ItemsTable extends React.PureComponent {
     let databaseLocations = [];
     if (showLocationTooltip && trackSpheres) {
       locations = trackerState.getLocationsForItem(itemName);
-      databaseLocations = DatabaseLogic.getOtherUsersLocationsForItem(databaseState, itemName);
+      databaseLocations = databaseState.otherUsersLocationsForItem(itemName);
     }
 
     return (
@@ -211,7 +212,7 @@ ItemsTable.defaultProps = {
 
 ItemsTable.propTypes = {
   backgroundColor: PropTypes.string,
-  databaseState: PropTypes.object.isRequired,
+  databaseState: PropTypes.instanceOf(DatabaseState).isRequired,
   decrementItem: PropTypes.func.isRequired,
   incrementItem: PropTypes.func.isRequired,
   spheres: PropTypes.instanceOf(Spheres).isRequired,

@@ -7,14 +7,17 @@ import LogicHelper from './logic-helper';
 import TrackerState from './tracker-state';
 
 export default class Spheres {
-  constructor(trackerState) {
+  constructor(trackerState, databaseState) {
     this.state = trackerState;
+    this.databaseState = databaseState;
     this.spheres = null;
+    this.initial = true;
   }
 
   sphereForLocation(generalLocation, detailedLocation) {
     if (_.isNil(this.spheres)) {
       this._calculate();
+      this.initial = false;
     }
 
     return _.get(this.spheres, [generalLocation, detailedLocation]);
@@ -52,7 +55,10 @@ export default class Spheres {
 
   _updateSphereForLocation(generalLocation, detailedLocation) {
     _.set(this.spheres, [generalLocation, detailedLocation], this.currentSphere);
-    DatabaseLogic.saveSphere(generalLocation, detailedLocation, this.currentSphere, this.spheres);
+    if (!this.initial) {
+      DatabaseLogic.saveSphere(generalLocation,
+        detailedLocation, this.currentSphere, this.databaseState);
+    }
   }
 
   _isEntranceAdded(dungeonOrCaveName) {

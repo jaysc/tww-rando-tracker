@@ -34,6 +34,7 @@ export default class DatabaseLogic {
     _.forEach(trackerState.locationsChecked, (detailedLocations, generalLocation) => {
       _.forEach(detailedLocations, (value, detailedLocation) => {
         const locationCallback = (snapshot) => {
+          console.log('location callback');
           console.log(`${generalLocation} - ${detailedLocation}`);
           console.log(snapshot.key);
           const newData = snapshot.val();
@@ -53,6 +54,7 @@ export default class DatabaseLogic {
       _.forEach(detailedLocations, (value, detailedLocation) => {
         const key = `${this.gamePath()}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}`;
         const callback = (snapshot) => {
+          console.log('sphere callback');
           console.log(`Sphere - ${generalLocation} - ${detailedLocation}`);
           console.log(snapshot.key);
           const newData = snapshot.val();
@@ -65,26 +67,9 @@ export default class DatabaseLogic {
     });
   }
 
-  static async initLoad(updateDatabaseState) {
-    const key = `${Database.permaId}/${Database.gameId}`;
-    return new Promise((resolve) => {
-      Database.get(key).then((snapshot) => {
-        console.log('Loading data');
-        const latestData = snapshot.val();
-        console.log(latestData);
-        if (latestData) {
-          updateDatabaseState(latestData);
-          resolve(latestData);
-        } else {
-          resolve({});
-        }
-      });
-    });
-  }
-
-  static resolveDatabaseItems(databaseState, trackerState) {
+  static resolveDatabaseItems(newData, trackerState) {
     const items = {};
-    _.forEach(_.get(databaseState, 'items'), (itemValue, itemName) => {
+    _.forEach(_.get(newData, 'items'), (itemValue, itemName) => {
       _.forEach(itemValue, (value, authId) => {
         if (authId === Authentication.userId) {
           _.set(items, itemName, value.itemCount);
@@ -94,10 +79,10 @@ export default class DatabaseLogic {
     _.merge(trackerState.items, items);
   }
 
-  static resolveDatabaseLocations(databaseState, trackerState) {
+  static resolveDatabaseLocations(newData, trackerState) {
     const locationsChecked = {};
     const itemsForLocations = {};
-    _.forEach(_.get(databaseState, 'locations'), (detailedLocationList, generalLocation) => {
+    _.forEach(_.get(newData, 'locations'), (detailedLocationList, generalLocation) => {
       _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
         _.forEach(detailedLocationListValue, (value, authId) => {
           if (authId === Authentication.userId) {
@@ -144,7 +129,7 @@ export default class DatabaseLogic {
 
   static saveLocation(generalLocation, detailedLocation, isChecked) {
     const key = `${this.gamePath()}/locations/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
-    const value = { isChecked: isChecked ? true : null };
+    const value = { isChecked };
     Database.save(key, value);
   }
 
@@ -153,71 +138,13 @@ export default class DatabaseLogic {
     Database.update(key, { itemName });
   }
 
-  static saveSphere(generalLocation, detailedLocation, sphere, currentSpheres) {
+  static saveSphere(generalLocation, detailedLocation, sphere, databaseState) {
     if (sphere !== 0 && LogicHelper.isProgressLocation(generalLocation, detailedLocation)) {
-      const oldSphere = _.get(currentSpheres, [generalLocation, detailedLocation]);
+      const oldSphere = _.get(databaseState, ['spheres', generalLocation, detailedLocation, Authentication.authId]);
       if (!oldSphere || oldSphere !== sphere) {
         const key = `${this.gamePath()}/spheres/${generalLocation}/${DatabaseLogic.formatLocationName(detailedLocation)}/${Authentication.userId}`;
         Database.save(key, { sphere });
       }
     }
-  }
-
-  static coopFound(databaseState, openedLocation, location) {
-    const databaseStateLocation = _.get(databaseState, ['locations', openedLocation, location]);
-    let coopLocation = '';
-    if (databaseStateLocation
-      && _.some(databaseStateLocation,
-        (value, authId) => authId !== Authentication.userId && value.isChecked)) {
-      coopLocation = 'coop-found';
-    }
-    return coopLocation;
-  }
-
-  static otherUsersItem(databaseState, itemName) {
-    const result = [];
-    _.forEach(_.get(databaseState, 'locations'), (detailedLocationList, generalLocation) => {
-      _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
-        _.forEach(detailedLocationListValue, (value, authId) => {
-          if (authId !== Authentication.userId
-            && _.get(value, 'itemName') === itemName
-            && _.get(value, 'isChecked')) {
-            result.push(`${authId} - ${generalLocation} | ${detailedLocation}`);
-          }
-        });
-      });
-    });
-    return result;
-  }
-
-  static otherUsersItemForLocation(databaseState, generalLocation, detailedLocation) {
-    const result = [];
-
-    const detailedLocationValue = _.get(databaseState, ['locations', generalLocation, detailedLocation]);
-    _.forEach(detailedLocationValue, (value, authId) => {
-      if (authId !== Authentication.userId
-        && _.get(value, 'itemName')
-        && _.get(value, 'isChecked')) {
-        result.push(`${authId} - ${_.get(value, 'itemName')}`);
-      }
-    });
-
-    return result;
-  }
-
-  static getOtherUsersLocationsForItem(databaseState, itemName) {
-    const locations = [];
-    _.forEach(_.get(databaseState, 'locations'), (detailedLocationList, generalLocation) => {
-      _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
-        _.forEach(detailedLocationListValue, (value, authId) => {
-          if (authId !== Authentication.userId
-            && _.get(value, 'itemName') === itemName
-            && _.get(value, 'isChecked')) {
-            locations.push({ authId, generalLocation, detailedLocation });
-          }
-        });
-      });
-    });
-    return locations;
   }
 }

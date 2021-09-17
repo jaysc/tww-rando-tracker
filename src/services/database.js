@@ -1,5 +1,5 @@
 import {
-  getDatabase, ref, set, connectDatabaseEmulator, onChildAdded, onChildChanged, get, update,
+  getDatabase, ref, set, connectDatabaseEmulator, onChildAdded, onChildChanged, onChildRemoved, onValue, update,
 } from 'firebase/database';
 
 export default class Database {
@@ -17,13 +17,23 @@ export default class Database {
   }
 
   static onChildChanged(key, callback) {
-    const itemRef = ref(this.db, key);
-    onChildChanged(itemRef, callback);
+    const keyRef = ref(this.db, key);
+    onChildChanged(keyRef, callback);
   }
 
   static onChildAdded(key, callback) {
-    const itemRef = ref(this.db, key);
-    onChildAdded(itemRef, callback);
+    const keyRef = ref(this.db, key);
+    onChildAdded(keyRef, callback);
+  }
+
+  static onValue(key, callback) {
+    const keyRef = ref(this.db, key);
+    onValue(keyRef, callback);
+  }
+
+  static onChildRemoved(key, callback) {
+    const keyRef = ref(this.db, key);
+    onChildRemoved(keyRef, callback);
   }
 
   static save(key, value) {
@@ -34,9 +44,5 @@ export default class Database {
 
   static update(key, value) {
     update(ref(this.db, key), value);
-  }
-
-  static async get(key) {
-    return get(ref(this.db, key));
   }
 }

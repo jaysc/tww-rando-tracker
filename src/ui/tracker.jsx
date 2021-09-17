@@ -5,6 +5,7 @@ import Loader from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 
 import DatabaseLogic from '../services/database-logic';
+import DatabaseState from '../services/database-state';
 import Firebase from '../services/firebase';
 import LogicHelper from '../services/logic-helper';
 import TrackerController from '../services/tracker-controller';
@@ -114,13 +115,13 @@ class Tracker extends React.PureComponent {
     }
 
     const {
+      databaseState,
       logic,
       saveData,
       spheres,
       trackerState,
     } = initialData;
 
-    const databaseState = {};
     DatabaseLogic.initSubscribeItems(trackerState, this.updateTrackerStateFromDatabase);
     DatabaseLogic.initSubscribeSphere(trackerState, this.updateSpheresForDatabase);
     DatabaseLogic.initSubscribeLocations(trackerState, this.updateTrackerStateFromDatabase);

@@ -1,3 +1,4 @@
+import DatabaseState from './database-state';
 import Locations from './locations';
 import LogicCalculation from './logic-calculation';
 import LogicHelper from './logic-helper';
@@ -57,11 +58,13 @@ export default class TrackerController {
   }
 
   static refreshState(newState) {
+    const databaseState = new DatabaseState();
     const logic = new LogicCalculation(newState);
-    const spheres = new Spheres(newState);
+    const spheres = new Spheres(newState, databaseState);
     const saveData = this._getSaveData(newState);
 
     return {
+      databaseState,
       logic,
       saveData,
       spheres,
