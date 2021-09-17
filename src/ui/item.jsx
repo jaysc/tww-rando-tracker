@@ -70,15 +70,14 @@ class Item extends React.PureComponent {
 
   render() {
     const {
-      databaseState, itemName, locations, spheres,
+      databaseLocations, locations, spheres,
     } = this.props;
 
-    if (!_.isEmpty(locations)) {
+    if (!_.isEmpty(locations) || !_.isEmpty(databaseLocations)) {
       return (
         <Tooltip tooltipContent={(
           <FoundAtTooltip
-            databaseState={databaseState}
-            itemName={itemName}
+            databaseLocations={databaseLocations}
             locations={locations}
             spheres={spheres}
           />
@@ -94,6 +93,7 @@ class Item extends React.PureComponent {
 }
 
 Item.defaultProps = {
+  databaseLocations: [],
   decrementItem: null,
   locations: [],
   spheres: null,
@@ -101,7 +101,11 @@ Item.defaultProps = {
 
 Item.propTypes = {
   clearSelectedItem: PropTypes.func.isRequired,
-  databaseState: PropTypes.object.isRequired,
+  databaseLocations: PropTypes.arrayOf(PropTypes.exact({
+    authId: PropTypes.string.isRequired,
+    generalLocation: PropTypes.string.isRequired,
+    detailedLocation: PropTypes.string.isRequired,
+  })),
   decrementItem: PropTypes.func,
   images: PropTypes.arrayOf(PropTypes.string).isRequired,
   incrementItem: PropTypes.func.isRequired,

@@ -200,4 +200,20 @@ export default class DatabaseLogic {
 
     return result;
   }
+
+  static getOtherUsersLocationsForItem(databaseState, itemName) {
+    const locations = [];
+    _.forEach(_.get(databaseState, 'locations'), (detailedLocationList, generalLocation) => {
+      _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
+        _.forEach(detailedLocationListValue, (value, authId) => {
+          if (authId !== Authentication.userId
+            && _.get(value, 'itemName') === itemName
+            && _.get(value, 'isChecked')) {
+            locations.push({ authId, generalLocation, detailedLocation });
+          }
+        });
+      });
+    });
+    return locations;
+  }
 }

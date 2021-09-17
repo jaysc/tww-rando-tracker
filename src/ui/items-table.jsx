@@ -2,6 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import DatabaseLogic from '../services/database-logic';
 import LogicHelper from '../services/logic-helper';
 import Spheres from '../services/spheres';
 import TrackerState from '../services/tracker-state';
@@ -61,14 +62,16 @@ class ItemsTable extends React.PureComponent {
     const itemImages = _.get(Images.IMAGES, ['ITEMS', itemName]);
 
     let locations = [];
+    let databaseLocations = [];
     if (showLocationTooltip && trackSpheres) {
       locations = trackerState.getLocationsForItem(itemName);
+      databaseLocations = DatabaseLogic.getOtherUsersLocationsForItem(databaseState, itemName);
     }
 
     return (
       <Item
         clearSelectedItem={this.clearSelectedItem}
-        databaseState={databaseState}
+        databaseLocations={databaseLocations}
         decrementItem={decrementItem}
         images={itemImages}
         incrementItem={incrementItem}
