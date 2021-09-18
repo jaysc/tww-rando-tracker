@@ -7,9 +7,10 @@ import LogicHelper from './logic-helper';
 export default class DatabaseLogic {
   static gamePath = () => `games/${Database.permaId}/${Database.gameId}`;
 
-  static initItems(items) {
-    _.forEach(items, (value, item) => {
-      this.saveItem(item, value);
+  static init() {
+    Database.update(`${this.gamePath()}/metadata`, {
+      timestamp: Date.now(),
+      ownerId: Authentication.userId,
     });
   }
 

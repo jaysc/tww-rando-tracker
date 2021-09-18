@@ -1,7 +1,43 @@
 {
-  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
+    /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+    "rules": {
+        "games": {
+            "$permaId": {
+                "$gameId": {
+                    "metadata": {
+                        "timestamp": {
+                            ".write": "!data.exists() && auth != null"
+                        },
+                        "ownerId": {
+                            ".write": "!data.exists() && auth != null && newData.val() == auth.uid"
+                        }
+                    },
+                    "items": {
+                        "$itemName": {
+                            "$itemAuthId": {
+                                ".read": true,
+                                ".write": "auth != null && $itemAuthId === auth.uid"
+                            }
+                        }
+                    },
+                    "locations": {
+                        "$generalLocation": {
+                            "$detailedLocation": {
+                                "$locationAuthId": {
+                                    ".read": true,
+                                    ".write": "auth != null && $locationAuthId === auth.uid"
+                                }
+                            }
+                        }
+                    },
+                    "users":{
+                      "$userAuthId": {
+                        ".read": true,
+                        ".write": "auth != null && $userAuthId === auth.uid"
+                      }
+                    }
+                }
+            }
+        }
+    }
 }

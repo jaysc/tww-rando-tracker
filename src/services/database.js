@@ -46,6 +46,8 @@ export default class Database {
   }
 
   static update(key, value) {
+    console.log(`Database update key: ${key}`);
+    console.log(`Database update value: ${value}`);
     update(ref(this.db, key), value);
   }
 }
