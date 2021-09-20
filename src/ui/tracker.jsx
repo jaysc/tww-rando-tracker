@@ -80,8 +80,7 @@ class Tracker extends React.PureComponent {
         params: { permalink, gameId },
       },
     } = this.props;
-    await Firebase.initialize(permalink, gameId);
-    console.log('Firebase loaded');
+
     let initialData;
 
     if (loadProgress) {
@@ -122,8 +121,14 @@ class Tracker extends React.PureComponent {
     } = initialData;
 
     const databaseState = new DatabaseState();
-    DatabaseLogic.initSubscribeItems(trackerState, this.updateTrackerStateFromDatabase);
-    DatabaseLogic.initSubscribeLocations(trackerState, this.updateTrackerStateFromDatabase);
+
+    if (gameId) {
+      await Firebase.initialize(permalink, gameId);
+      console.log('Firebase initialised');
+
+      DatabaseLogic.initSubscribeItems(trackerState, this.updateTrackerStateFromDatabase);
+      DatabaseLogic.initSubscribeLocations(trackerState, this.updateTrackerStateFromDatabase);
+    }
 
     this.setState({
       isLoading: false,

@@ -13,6 +13,7 @@ class SongNotes extends React.PureComponent {
   render() {
     const {
       children,
+      databaseLocations,
       locations,
       songCount,
       songName,
@@ -39,7 +40,11 @@ class SongNotes extends React.PureComponent {
             {noteImages}
           </div>
           {!_.isEmpty(locations) && (
-            <FoundAtTooltip locations={locations} spheres={spheres} />
+            <FoundAtTooltip
+              locations={locations}
+              spheres={spheres}
+              databaseLocations={databaseLocations}
+            />
           )}
         </>
       );
@@ -55,6 +60,11 @@ class SongNotes extends React.PureComponent {
 
 SongNotes.propTypes = {
   children: PropTypes.element.isRequired,
+  databaseLocations: PropTypes.arrayOf(PropTypes.exact({
+    authId: PropTypes.string.isRequired,
+    generalLocation: PropTypes.string.isRequired,
+    detailedLocation: PropTypes.string.isRequired,
+  })).isRequired,
   locations: PropTypes.arrayOf(PropTypes.exact({
     generalLocation: PropTypes.string.isRequired,
     detailedLocation: PropTypes.string.isRequired,

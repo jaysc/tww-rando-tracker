@@ -14,6 +14,7 @@
                     },
                     "items": {
                         "$itemName": {
+                            ".read": true,
                             "$itemAuthId": {
                                 ".read": true,
                                 ".write": "auth != null && $itemAuthId === auth.uid"
@@ -23,6 +24,7 @@
                     "locations": {
                         "$generalLocation": {
                             "$detailedLocation": {
+                                ".read": true,
                                 "$locationAuthId": {
                                     ".read": true,
                                     ".write": "auth != null && $locationAuthId === auth.uid"
@@ -30,11 +32,12 @@
                             }
                         }
                     },
-                    "users":{
-                      "$userAuthId": {
+                    "users": {
                         ".read": true,
-                        ".write": "auth != null && $userAuthId === auth.uid"
-                      }
+                        "$userAuthId": {
+                            ".read": true,
+                            ".write": "auth != null && $userAuthId === auth.uid"
+                        }
                     }
                 }
             }

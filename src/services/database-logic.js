@@ -24,7 +24,6 @@ export default class DatabaseLogic {
         console.log(newData);
         updateDatabaseState(_.set({}, ['items', item, snapshot.key], newData));
       };
-
       const key = `${this.gamePath()}/items/${item}`;
       Database.onChildAdded(key, itemCallback);
       Database.onChildChanged(key, itemCallback);
@@ -125,7 +124,7 @@ export default class DatabaseLogic {
   static saveItem(trackerState, itemName) {
     const itemCount = trackerState.getItemValue(itemName);
     const key = `${this.gamePath()}/items/${itemName}/${Authentication.userId}`;
-    Database.save(key, { itemCount: itemCount !== 0 ? itemCount : null });
+    Database.save(key, { itemCount });
   }
 
   static saveLocation(generalLocation, detailedLocation, isChecked) {

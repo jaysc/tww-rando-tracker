@@ -86,13 +86,18 @@ class ItemsTable extends React.PureComponent {
   }
 
   song(songName) {
-    const { trackerState, trackSpheres, spheres } = this.props;
+    const {
+      databaseState, trackerState, trackSpheres, spheres,
+    } = this.props;
 
     const songCount = trackerState.getItemValue(songName);
     const locations = trackSpheres ? trackerState.getLocationsForItem(songName) : [];
+    const databaseLocations = trackSpheres
+      ? databaseState.otherUsersLocationsForItem(songName) : [];
 
     return (
       <SongNotes
+        databaseLocations={databaseLocations}
         locations={locations}
         songCount={songCount}
         songName={songName}
