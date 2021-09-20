@@ -64,15 +64,17 @@ class Sector extends React.PureComponent {
     const chartImages = _.get(Images.IMAGES, ['CHARTS', chartType]);
 
     let locations = [];
+    let databaseLocations = [];
     if (trackSpheres) {
       locations = trackerState.getLocationsForItem(chartName);
+      databaseLocations = databaseState.otherUsersLocationsForItem(chartName);
     }
 
     return (
       <div className="treasure-chart">
         <Item
           clearSelectedItem={clearSelectedItem}
-          databaseState={databaseState}
+          databaseLocations={databaseLocations}
           decrementItem={decrementItem}
           images={chartImages}
           incrementItem={incrementItem}

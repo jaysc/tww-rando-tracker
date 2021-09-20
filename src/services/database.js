@@ -15,6 +15,7 @@ export default class Database {
 
       this.permaId = permaId;
       this.gameId = gameId;
+      this.enabled = true;
       resolve();
     });
   }
@@ -40,14 +41,18 @@ export default class Database {
   }
 
   static save(key, value) {
-    console.log(`Database save key: ${key}`);
-    console.log(`Database save value: ${value}`);
-    set(ref(this.db, key), value);
+    if (this.db) {
+      console.log(`Database save key: ${key}`);
+      console.log(`Database save value: ${value}`);
+      set(ref(this.db, key), value);
+    }
   }
 
   static update(key, value) {
-    console.log(`Database update key: ${key}`);
-    console.log(`Database update value: ${value}`);
-    update(ref(this.db, key), value);
+    if (this.db) {
+      console.log(`Database update key: ${key}`);
+      console.log(`Database update value: ${value}`);
+      update(ref(this.db, key), value);
+    }
   }
 }

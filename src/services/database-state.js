@@ -47,17 +47,30 @@ export default class DatabaseState {
 
   otherUsersLocationsForItem(itemName) {
     const locations = [];
-    _.forEach(_.get(this, 'locations'), (detailedLocationList, generalLocation) => {
-      _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
-        _.forEach(detailedLocationListValue, (value, authId) => {
-          if (authId !== Authentication.userId
-            && _.get(value, 'itemName') === itemName
-            && _.get(value, 'isChecked')) {
-            locations.push({ authId, generalLocation, detailedLocation });
-          }
+
+    if (_.get(this, ['items', itemName])) {
+      const itemFoundForUser = {};
+
+      _.forEach(_.get(this, 'locations'), (detailedLocationList, generalLocation) => {
+        _.forEach(detailedLocationList, (detailedLocationListValue, detailedLocation) => {
+          _.forEach(detailedLocationListValue, (value, authId) => {
+            if (authId !== Authentication.userId
+              && _.get(value, 'itemName') === itemName
+              && _.get(value, 'isChecked')) {
+              locations.push({ authId, generalLocation, detailedLocation });
+              _.set(itemFoundForUser, authId, true);
+            }
+          });
         });
       });
-    });
+
+      _.forEach(_.get(this, ['items', itemName]), (value, authId) => {
+        if (authId !== Authentication.userId && !_.get(itemFoundForUser, authId)) {
+          locations.push({ authId, generalLocation: 'Unknown', detailedLocation: 'location' });
+        }
+      });
+    }
+
     return locations;
   }
 }

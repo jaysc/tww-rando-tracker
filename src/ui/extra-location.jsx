@@ -32,15 +32,17 @@ class ExtraLocation extends React.PureComponent {
     const compassImages = _.get(Images.IMAGES, 'COMPASSES');
 
     let locations = [];
+    let databaseLocations = [];
     if (trackSpheres) {
       locations = trackerState.getLocationsForItem(compassName);
+      databaseLocations = databaseState.otherUsersLocationsForItem(compassName);
     }
 
     return (
       <div className="dungeon-item compass">
         <Item
           clearSelectedItem={clearSelectedItem}
-          databaseState={databaseState}
+          databaseLocations={databaseLocations}
           decrementItem={decrementItem}
           images={compassImages}
           incrementItem={incrementItem}
@@ -73,15 +75,17 @@ class ExtraLocation extends React.PureComponent {
     const dungeonMapImages = _.get(Images.IMAGES, 'DUNGEON_MAPS');
 
     let locations = [];
+    let databaseLocations = [];
     if (trackSpheres) {
       locations = trackerState.getLocationsForItem(dungeonMapName);
+      databaseLocations = databaseState.otherUsersLocationsForItem(dungeonMapName);
     }
 
     return (
       <div className="dungeon-item dungeon-map">
         <Item
           clearSelectedItem={clearSelectedItem}
-          databaseState={databaseState}
+          databaseLocations={databaseLocations}
           decrementItem={decrementItem}
           images={dungeonMapImages}
           incrementItem={incrementItem}
@@ -114,15 +118,17 @@ class ExtraLocation extends React.PureComponent {
     const smallKeyImages = _.get(Images.IMAGES, 'SMALL_KEYS');
 
     let locations = [];
+    let databaseLocations = [];
     if (trackSpheres) {
       locations = trackerState.getLocationsForItem(smallKeyName);
+      databaseLocations = databaseState.otherUsersLocationsForItem(smallKeyName);
     }
 
     return (
       <div className="dungeon-item small-key">
         <Item
           clearSelectedItem={clearSelectedItem}
-          databaseState={databaseState}
+          databaseLocations={databaseLocations}
           decrementItem={decrementItem}
           images={smallKeyImages}
           incrementItem={incrementItem}
@@ -155,15 +161,17 @@ class ExtraLocation extends React.PureComponent {
     const bigKeyImages = _.get(Images.IMAGES, 'BIG_KEYS');
 
     let locations = [];
+    let databaseLocations = [];
     if (trackSpheres) {
       locations = trackerState.getLocationsForItem(bigKeyName);
+      databaseLocations = databaseState.otherUsersLocationsForItem(bigKeyName);
     }
 
     return (
       <div className="dungeon-item big-key">
         <Item
           clearSelectedItem={clearSelectedItem}
-          databaseState={databaseState}
+          databaseLocations={databaseLocations}
           decrementItem={decrementItem}
           images={bigKeyImages}
           incrementItem={incrementItem}
@@ -207,7 +215,6 @@ class ExtraLocation extends React.PureComponent {
       <div className="dungeon-item dungeon-entry">
         <Item
           clearSelectedItem={clearSelectedItem}
-          databaseState={databaseState}
           images={entranceImages}
           incrementItem={incrementItemFunc}
           itemCount={entryCount}
