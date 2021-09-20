@@ -41,6 +41,7 @@ module.exports = (env, argv) => {
     plugins: [
       new Dotenv({
         path: `./.env${env.file ? `.${env.file}` : ''}`,
+        systemvars: !!isProduction,
       }),
       new FaviconsWebpackPlugin(faviconsWebpackPluginSettings),
       new HtmlWebpackPlugin({
