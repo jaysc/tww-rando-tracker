@@ -1,24 +1,61 @@
-import _ from 'lodash';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Oval } from 'react-loader-spinner';
-import { ToastContainer, toast } from 'react-toastify';
+import _ from "lodash";
+import PropTypes from "prop-types";
+import React from "react";
+import { Oval } from "react-loader-spinner";
+import { ToastContainer, toast } from "react-toastify";
 
-import LogicHelper from '../services/logic-helper';
-import TrackerController from '../services/tracker-controller';
+import LogicHelper from "../services/logic-helper";
+import TrackerController from "../services/tracker-controller";
 
-import Buttons from './buttons';
-import ColorPickerWindow from './color-picker-window';
-import Images from './images';
-import ItemsTable from './items-table';
-import LocationsTable from './locations-table';
-import SphereTracking from './sphere-tracking';
-import Statistics from './statistics';
-import Storage from './storage';
+import Buttons from "./buttons";
+import ColorPickerWindow from "./color-picker-window";
+import Images from "./images";
+import ItemsTable from "./items-table";
+import LocationsTable from "./locations-table";
+import SphereTracking from "./sphere-tracking";
+import Statistics from "./statistics";
+import Storage from "./storage";
 
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
+import Database from "../services/database";
+import TrackerState from "../services/tracker-state";
 
-class Tracker extends React.PureComponent {
+interface ITrackerProps {
+  loadProgress: boolean;
+  permalink: string;
+  gameId?: string;
+}
+
+interface ITrackerState {
+  colorPickerOpen: boolean;
+  colors?: {
+    extraLocationsBackground;
+    itemsTableBackground;
+    sphereTrackingBackground;
+    statisticsBackground;
+  };
+  database?: Database;
+  disableLogic: boolean;
+  entrancesListOpen: boolean;
+  isLoading: boolean;
+  lastLocation?;
+  logic?;
+  onlyProgressLocations: boolean;
+  openedExit?;
+  openedLocation?;
+  openedLocationIsDungeon?;
+  saveData?;
+  spheres?;
+  trackSpheres: boolean;
+  trackerState?: TrackerState;
+}
+
+class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
+  static propTypes: {
+    loadProgress: PropTypes.Validator<boolean>;
+    permalink: PropTypes.Validator<string>;
+  };
+
   constructor(props) {
     super(props);
 
@@ -30,6 +67,7 @@ class Tracker extends React.PureComponent {
         sphereTrackingBackground: null,
         statisticsBackground: null,
       },
+      database: null,
       disableLogic: false,
       entrancesListOpen: false,
       isLoading: true,
@@ -42,16 +80,17 @@ class Tracker extends React.PureComponent {
     };
 
     this.initialize();
-
     this.clearOpenedMenus = this.clearOpenedMenus.bind(this);
-    this.clearRaceModeBannedLocations = this.clearRaceModeBannedLocations.bind(this);
+    this.clearRaceModeBannedLocations =
+      this.clearRaceModeBannedLocations.bind(this);
     this.decrementItem = this.decrementItem.bind(this);
     this.incrementItem = this.incrementItem.bind(this);
     this.toggleColorPicker = this.toggleColorPicker.bind(this);
     this.toggleDisableLogic = this.toggleDisableLogic.bind(this);
     this.toggleEntrancesList = this.toggleEntrancesList.bind(this);
     this.toggleLocationChecked = this.toggleLocationChecked.bind(this);
-    this.toggleOnlyProgressLocations = this.toggleOnlyProgressLocations.bind(this);
+    this.toggleOnlyProgressLocations =
+      this.toggleOnlyProgressLocations.bind(this);
     this.toggleTrackSpheres = this.toggleTrackSpheres.bind(this);
     this.unsetExit = this.unsetExit.bind(this);
     this.unsetLastLocation = this.unsetLastLocation.bind(this);
@@ -69,48 +108,51 @@ class Tracker extends React.PureComponent {
       this.updatePreferences(preferences);
     }
 
-    const { loadProgress, permalink } = this.props;
+    const { loadProgress, permalink, gameId } = this.props;
 
     let initialData;
+    let database;
+    if (gameId) {
+      // gameId means multiplayer
+      // todo get cookie etc
+      database = new Database({ permaId: permalink, gameId: gameId });
+    } else {
+      if (loadProgress) {
+        const saveData = Storage.loadFromStorage();
 
-    if (loadProgress) {
-      const saveData = Storage.loadFromStorage();
+        if (!_.isNil(saveData)) {
+          try {
+            initialData = TrackerController.initializeFromSaveData(saveData);
 
-      if (!_.isNil(saveData)) {
-        try {
-          initialData = TrackerController.initializeFromSaveData(saveData);
+            toast.success("Progress loaded!");
+          } catch (err) {
+            TrackerController.reset();
+          }
+        }
 
-          toast.success('Progress loaded!');
-        } catch (err) {
-          TrackerController.reset();
+        if (_.isNil(initialData)) {
+          toast.error("Could not load progress from save data!");
         }
       }
-
-      if (_.isNil(initialData)) {
-        toast.error('Could not load progress from save data!');
-      }
     }
-
     if (_.isNil(initialData)) {
       try {
         const decodedPermalink = decodeURIComponent(permalink);
 
-        initialData = await TrackerController.initializeFromPermalink(decodedPermalink);
+        initialData = await TrackerController.initializeFromPermalink(
+          decodedPermalink
+        );
       } catch (err) {
-        toast.error('Tracker could not be initialized!');
+        toast.error("Tracker could not be initialized!");
 
         throw err;
       }
     }
 
-    const {
-      logic,
-      saveData,
-      spheres,
-      trackerState,
-    } = initialData;
+    const { logic, saveData, spheres, trackerState } = initialData;
 
     this.setState({
+      database,
       isLoading: false,
       logic,
       saveData,
@@ -119,42 +161,55 @@ class Tracker extends React.PureComponent {
     });
   }
 
-  incrementItem(itemName) {
-    const {
-      lastLocation,
-      trackerState,
-    } = this.state;
+  incrementItem(itemName: string) {
+    const { lastLocation, trackerState, database } = this.state;
 
     let newTrackerState = trackerState.incrementItem(itemName);
 
     if (!_.isNil(lastLocation)) {
-      const {
-        generalLocation,
-        detailedLocation,
-      } = lastLocation;
+      const { generalLocation, detailedLocation } = lastLocation;
 
       newTrackerState = newTrackerState.setItemForLocation(
         itemName,
         generalLocation,
-        detailedLocation,
+        detailedLocation
       );
+    }
+
+    if (database) {
+      const { generalLocation, detailedLocation } = lastLocation ?? {};
+
+      database.setItem(itemName, {
+        count: newTrackerState.getItemValue(itemName),
+        generalLocation,
+        detailedLocation,
+      });
     }
 
     this.updateTrackerState(newTrackerState);
   }
 
   decrementItem(itemName) {
-    const { trackerState } = this.state;
+    const { trackerState, database } = this.state;
 
     const newTrackerState = trackerState.decrementItem(itemName);
+
+    if (database) {
+      database.setItem(itemName, {
+        count: newTrackerState.getItemValue(itemName),
+      });
+    }
 
     this.updateTrackerState(newTrackerState);
   }
 
   toggleLocationChecked(generalLocation, detailedLocation) {
-    const { trackerState } = this.state;
+    const { trackerState, database } = this.state;
 
-    let newTrackerState = trackerState.toggleLocationChecked(generalLocation, detailedLocation);
+    let newTrackerState = trackerState.toggleLocationChecked(
+      generalLocation,
+      detailedLocation
+    );
 
     if (newTrackerState.isLocationChecked(generalLocation, detailedLocation)) {
       this.setState({
@@ -163,10 +218,21 @@ class Tracker extends React.PureComponent {
           detailedLocation,
         },
       });
+
+      if (database) {
+        database.setLocation(generalLocation, detailedLocation, true);
+      }
     } else {
       this.setState({ lastLocation: null });
 
-      newTrackerState = newTrackerState.unsetItemForLocation(generalLocation, detailedLocation);
+      newTrackerState = newTrackerState.unsetItemForLocation(
+        generalLocation,
+        detailedLocation
+      );
+
+      if (database) {
+        database.setLocation(generalLocation, detailedLocation, false);
+      }
     }
 
     this.updateTrackerState(newTrackerState);
@@ -175,24 +241,29 @@ class Tracker extends React.PureComponent {
   clearRaceModeBannedLocations(dungeonName) {
     let { trackerState: newTrackerState } = this.state;
 
-    const raceModeBannedLocations = LogicHelper.raceModeBannedLocations(dungeonName);
+    const raceModeBannedLocations =
+      LogicHelper.raceModeBannedLocations(dungeonName);
 
-    _.forEach(raceModeBannedLocations, ({ generalLocation, detailedLocation }) => {
-      if (!newTrackerState.isLocationChecked(generalLocation, detailedLocation)) {
-        newTrackerState = newTrackerState.toggleLocationChecked(generalLocation, detailedLocation);
+    _.forEach(
+      raceModeBannedLocations,
+      ({ generalLocation, detailedLocation }) => {
+        if (
+          !newTrackerState.isLocationChecked(generalLocation, detailedLocation)
+        ) {
+          newTrackerState = newTrackerState.toggleLocationChecked(
+            generalLocation,
+            detailedLocation
+          );
+        }
       }
-    });
+    );
 
     this.updateTrackerState(newTrackerState);
   }
 
   updateTrackerState(newTrackerState) {
-    const {
-      logic,
-      saveData,
-      spheres,
-      trackerState,
-    } = TrackerController.refreshState(newTrackerState);
+    const { logic, saveData, spheres, trackerState } =
+      TrackerController.refreshState(newTrackerState);
 
     Storage.saveToStorage(saveData);
 
@@ -300,12 +371,8 @@ class Tracker extends React.PureComponent {
   }
 
   updatePreferences(preferenceChanges) {
-    const {
-      colors,
-      disableLogic,
-      onlyProgressLocations,
-      trackSpheres,
-    } = this.state;
+    const { colors, disableLogic, onlyProgressLocations, trackSpheres } =
+      this.state;
 
     const existingPreferences = {
       colors,

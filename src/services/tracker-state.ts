@@ -1,21 +1,23 @@
-import _ from 'lodash';
+import _ from "lodash";
 
-import Locations from './locations';
-import LogicHelper from './logic-helper';
+import Locations from "./locations";
+import LogicHelper from "./logic-helper";
 
 class TrackerState {
+  entrances: {};
+  items: {};
+  itemsForLocations: {};
+  locationsChecked: {};
+
   static default() {
     const newState = new TrackerState();
 
     newState.entrances = {};
     newState.items = _.reduce(
       LogicHelper.ALL_ITEMS,
-      (accumulator, item) => _.set(
-        accumulator,
-        item,
-        LogicHelper.startingItemCount(item),
-      ),
-      {},
+      (accumulator, item) =>
+        _.set(accumulator, item, LogicHelper.startingItemCount(item)),
+      {}
     );
     newState.itemsForLocations = Locations.mapLocations(() => null);
     newState.locationsChecked = Locations.mapLocations(() => false);
@@ -83,7 +85,10 @@ class TrackerState {
   }
 
   getExitForEntrance(dungeonOrCaveName) {
-    return _.findKey(this.entrances, (entranceName) => entranceName === dungeonOrCaveName);
+    return _.findKey(
+      this.entrances,
+      (entranceName) => entranceName === dungeonOrCaveName
+    );
   }
 
   setEntranceForExit(exitName, entranceName) {
@@ -110,7 +115,11 @@ class TrackerState {
     const newState = this._clone({ locationsChecked: true });
 
     const isChecked = this.isLocationChecked(generalLocation, detailedLocation);
-    _.set(newState.locationsChecked, [generalLocation, detailedLocation], !isChecked);
+    _.set(
+      newState.locationsChecked,
+      [generalLocation, detailedLocation],
+      !isChecked
+    );
 
     return newState;
   }
@@ -122,29 +131,40 @@ class TrackerState {
   getLocationsForItem(itemName) {
     const locationsForItem = [];
 
-    _.forEach(this.itemsForLocations, (generalLocationData, generalLocation) => {
-      _.forEach(generalLocationData, (itemAtLocation, detailedLocation) => {
-        if (itemAtLocation === itemName) {
-          locationsForItem.push({
-            generalLocation,
-            detailedLocation,
-          });
-        }
-      });
-    });
+    _.forEach(
+      this.itemsForLocations,
+      (generalLocationData, generalLocation) => {
+        _.forEach(generalLocationData, (itemAtLocation, detailedLocation) => {
+          if (itemAtLocation === itemName) {
+            locationsForItem.push({
+              generalLocation,
+              detailedLocation,
+            });
+          }
+        });
+      }
+    );
 
     return locationsForItem;
   }
 
   setItemForLocation(itemName, generalLocation, detailedLocation) {
     const newState = this._clone({ itemsForLocations: true });
-    _.set(newState.itemsForLocations, [generalLocation, detailedLocation], itemName);
+    _.set(
+      newState.itemsForLocations,
+      [generalLocation, detailedLocation],
+      itemName
+    );
     return newState;
   }
 
   unsetItemForLocation(generalLocation, detailedLocation) {
     const newState = this._clone({ itemsForLocations: true });
-    _.set(newState.itemsForLocations, [generalLocation, detailedLocation], null);
+    _.set(
+      newState.itemsForLocations,
+      [generalLocation, detailedLocation],
+      null
+    );
     return newState;
   }
 
@@ -153,15 +173,18 @@ class TrackerState {
     items: cloneItems,
     locationsChecked: cloneLocationsChecked,
     itemsForLocations: cloneItemsForLocations,
+  }: {
+    entrances?: boolean;
+    items?: boolean;
+    locationsChecked?: boolean;
+    itemsForLocations?: boolean;
   }) {
     const newState = new TrackerState();
 
     newState.entrances = cloneEntrances
       ? _.clone(this.entrances)
       : this.entrances;
-    newState.items = cloneItems
-      ? _.clone(this.items)
-      : this.items;
+    newState.items = cloneItems ? _.clone(this.items) : this.items;
     newState.locationsChecked = cloneLocationsChecked
       ? _.cloneDeep(this.locationsChecked)
       : this.locationsChecked;
