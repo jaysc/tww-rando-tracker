@@ -17,7 +17,7 @@ import Statistics from "./statistics";
 import Storage from "./storage";
 
 import "react-toastify/dist/ReactToastify.css";
-import Database from "../services/database";
+import Database, { OnJoinedRoom } from "../services/database";
 import TrackerState from "../services/tracker-state";
 
 interface ITrackerProps {
@@ -98,6 +98,8 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
     this.updateEntranceForExit = this.updateEntranceForExit.bind(this);
     this.updateOpenedExit = this.updateOpenedExit.bind(this);
     this.updateOpenedLocation = this.updateOpenedLocation.bind(this);
+
+    this.databaseInitialLoad = this.databaseInitialLoad.bind(this);
   }
 
   async initialize() {
@@ -111,11 +113,15 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
     const { loadProgress, permalink, gameId } = this.props;
 
     let initialData;
-    let database;
+    let database: Database;
     if (gameId) {
       // gameId means multiplayer
       // todo get cookie etc
-      database = new Database({ permaId: permalink, gameId: gameId });
+      database = new Database({
+        permaId: permalink,
+        gameId: gameId,
+        databaseInitialLoad: this.databaseInitialLoad.bind(this),
+      });
     } else {
       if (loadProgress) {
         const saveData = Storage.loadFromStorage();
@@ -159,6 +165,36 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
       spheres,
       trackerState,
     });
+
+    if (database) {
+      database.connect();
+    }
+  }
+
+  databaseInitialLoad() {
+    const { trackerState, database } = this.state;
+    const newTrackerState = trackerState._clone({ items: true, locationsChecked: true });
+
+    for (let itemName in database.state.items) {
+      const userDicts = database.state.items[itemName];
+      const count = userDicts[database.userId]?.count;
+
+      _.set(newTrackerState.items, itemName, count ?? 0);
+    }
+
+    for (let location in database.state.locations) {
+      const [generalLocation, detailedLocation] = location.split("#")
+      const isChecked = database.state.locations[location][database.userId]?.isChecked;
+
+      _.set(
+        newTrackerState.locationsChecked,
+        [generalLocation, detailedLocation],
+        isChecked ?? false
+      );
+    }
+
+
+    this.updateTrackerState(newTrackerState);
   }
 
   incrementItem(itemName: string) {

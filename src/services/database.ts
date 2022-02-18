@@ -5,6 +5,7 @@ export interface IDatabase {
   userId?: string;
   permaId: string;
   gameId: string;
+  databaseInitialLoad: () => void;
 }
 
 export default class Database {
@@ -13,13 +14,24 @@ export default class Database {
   gameId: string;
   userId: string;
 
+  databaseInitialLoad: () => void;
+
+  state: {
+    items: Record<string, Record<string, UserItem>>;
+    locations: object;
+  };
+
   constructor(options: IDatabase) {
     //todo add env
     //todo cookie read
     console.log("connecting to server");
-    this.websocket = new WebSocket("ws://localhost:3001/ws", "protocolOne");
     this.gameId = options.gameId;
     this.permaId = options.permaId;
+    this.databaseInitialLoad = options.databaseInitialLoad;
+  }
+
+  public connect() {
+    this.websocket = new WebSocket("ws://localhost:3001/ws", "protocolOne");
 
     this.websocket.onmessage = this.handleOnMessage.bind(this);
 
@@ -120,36 +132,71 @@ export default class Database {
     return messageId;
   }
 
-  private handleOnMessage(response: MessageEvent) {
-    const data = JSON.parse(response.data);
+  private handleOnMessage(response) {
+    const responseData = JSON.parse(response.data) as MessageEvent;
 
-    console.log("Recieved message:", data);
+    console.log("Recieved message:", responseData);
 
-    const event = _.get(data, "event");
+    if (responseData.err) {
+      console.warn(responseData.err);
+    }
+
+    if (responseData.message) {
+      console.log(responseData.message);
+    }
+
+    const event = responseData.event;
 
     switch (event) {
       case "onConnect":
-        this.setUserId(data);
+        this.setUserId(responseData.data as OnConnect);
         this.joinroom();
         break;
       case "joinedRoom":
-        this.joinedRoom(data);
+        this.onJoinedRoom(responseData.data as OnJoinedRoom);
         break;
-    }
-
-    if (data.err) {
-      console.warn(data.err);
-    }
-
-    if (data.message) {
-      console.log(data.message);
     }
   }
 
-  private setUserId(data: object) {
-    this.userId = _.get(data, ["data", "userId"]);
+  private setUserId(data: OnConnect) {
+    this.userId = data.userId;
     document.cookie = `userId=${this.userId}; Secure`;
     console.log(`userId set to '${this.userId}'`);
   }
-  private joinedRoom(data: object) {}
+  private onJoinedRoom(data: OnJoinedRoom) {
+    //Initial load
+    this.state = data;
+    this.databaseInitialLoad();
+  }
 }
+
+interface MessageEvent {
+  event?: string;
+  data?: object;
+  message?: string;
+  err?: string;
+}
+
+interface OnConnect {
+  userId: string;
+}
+
+export interface OnJoinedRoom {
+  //(itemname -> (User -> useritem))
+  items: Record<string, Record<string, UserItem>>;
+
+  // Key: generalLocation#detailedLocation
+  //(key -> (User -> useritem))
+  locations: Record<string, Record<string, UserLocation>>;
+}
+
+type UserItem = {
+  count: number;
+  generalLocation?: string;
+  detailedLocation?: string;
+};
+
+type UserLocation = {
+  generalLocation: string;
+  detailedLocation: string;
+};
