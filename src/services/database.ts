@@ -5,7 +5,9 @@ export interface IDatabase {
   userId?: string;
   permaId: string;
   gameId: string;
+  mode?: Mode;
   databaseInitialLoad: () => void;
+  databaseUpdate: (data: OnDataSaved) => void;
 }
 
 export default class Database {
@@ -13,8 +15,11 @@ export default class Database {
   permaId: string;
   gameId: string;
   userId: string;
+  mode: Mode;
+  roomId: string;
 
   databaseInitialLoad: () => void;
+  databaseUpdate: (data: OnDataSaved) => void;
 
   state: {
     items: Record<string, Record<string, UserItem>>;
@@ -23,11 +28,12 @@ export default class Database {
 
   constructor(options: IDatabase) {
     //todo add env
-    //todo cookie read
     console.log("connecting to server");
     this.gameId = options.gameId;
     this.permaId = options.permaId;
     this.databaseInitialLoad = options.databaseInitialLoad;
+    this.databaseUpdate = options.databaseUpdate;
+    this.mode = options.mode ?? Mode.ITEMSYNC;
   }
 
   public connect() {
@@ -53,6 +59,7 @@ export default class Database {
       payload: {
         name: this.gameId,
         perma: this.permaId,
+        mode: "ITEMSYNC",
       },
     };
     this.send(message);
@@ -155,6 +162,9 @@ export default class Database {
       case "joinedRoom":
         this.onJoinedRoom(responseData.data as OnJoinedRoom);
         break;
+      case "dataSaved":
+        this.onDataSaved(responseData.data as OnDataSaved);
+        break;
     }
   }
 
@@ -166,7 +176,12 @@ export default class Database {
   private onJoinedRoom(data: OnJoinedRoom) {
     //Initial load
     this.state = data;
+    this.roomId = data.id;
     this.databaseInitialLoad();
+  }
+
+  private onDataSaved(data: OnDataSaved) {
+    this.databaseUpdate(data);
   }
 }
 
@@ -182,6 +197,7 @@ interface OnConnect {
 }
 
 export interface OnJoinedRoom {
+  id: string;
   //(itemname -> (User -> useritem))
   items: Record<string, Record<string, UserItem>>;
 
@@ -199,4 +215,24 @@ type UserItem = {
 type UserLocation = {
   generalLocation: string;
   detailedLocation: string;
+};
+
+export enum Mode {
+  ITEMSYNC = "ITEMSYNC",
+  COOP = "COOP",
+}
+
+export enum SaveDataType {
+  ITEM = "ITEM",
+  LOCATION = "LOCATION",
+}
+
+export type OnDataSaved = {
+  count?: number;
+  itemName?: string;
+  type: SaveDataType;
+  userId: string;
+  generalLocation?: string;
+  detailedLocation?: string;
+  isChecked?: boolean;
 };

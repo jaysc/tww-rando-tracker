@@ -2,6 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Database from '../services/database';
 import LogicCalculation from '../services/logic-calculation';
 import Spheres from '../services/spheres';
 import TrackerState from '../services/tracker-state';
@@ -61,6 +62,7 @@ class LocationsTable extends React.PureComponent {
     const {
       clearOpenedMenus,
       clearRaceModeBannedLocations,
+      database,
       decrementItem,
       disableLogic,
       entrancesListOpen,
@@ -114,6 +116,7 @@ class LocationsTable extends React.PureComponent {
           clearOpenedMenus={clearOpenedMenus}
           clearRaceModeBannedLocations={clearRaceModeBannedLocations}
           disableLogic={disableLogic}
+          database={database}
           logic={logic}
           onlyProgressLocations={onlyProgressLocations}
           openedLocation={openedLocation}
@@ -167,6 +170,7 @@ class LocationsTable extends React.PureComponent {
   render() {
     const {
       backgroundColor,
+      database,
       decrementItem,
       disableLogic,
       incrementItem,
@@ -185,6 +189,7 @@ class LocationsTable extends React.PureComponent {
         {this.chartContainer()}
         <ExtraLocationsTable
           backgroundColor={backgroundColor}
+          database={database}
           clearSelectedItem={this.clearSelectedItem}
           clearSelectedLocation={this.clearSelectedLocation}
           decrementItem={decrementItem}
@@ -218,6 +223,7 @@ LocationsTable.propTypes = {
   backgroundColor: PropTypes.string,
   clearOpenedMenus: PropTypes.func.isRequired,
   clearRaceModeBannedLocations: PropTypes.func.isRequired,
+  database: PropTypes.instanceOf(Database),
   decrementItem: PropTypes.func.isRequired,
   disableLogic: PropTypes.bool.isRequired,
   entrancesListOpen: PropTypes.bool.isRequired,

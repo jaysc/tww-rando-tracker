@@ -17,7 +17,12 @@ import Statistics from "./statistics";
 import Storage from "./storage";
 
 import "react-toastify/dist/ReactToastify.css";
-import Database, { OnJoinedRoom } from "../services/database";
+import Database, {
+  Mode,
+  OnDataSaved,
+  OnJoinedRoom,
+  SaveDataType,
+} from "../services/database";
 import TrackerState from "../services/tracker-state";
 
 interface ITrackerProps {
@@ -100,6 +105,7 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
     this.updateOpenedLocation = this.updateOpenedLocation.bind(this);
 
     this.databaseInitialLoad = this.databaseInitialLoad.bind(this);
+    this.databaseUpdate = this.databaseUpdate.bind(this);
   }
 
   async initialize() {
@@ -121,6 +127,7 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
         permaId: permalink,
         gameId: gameId,
         databaseInitialLoad: this.databaseInitialLoad.bind(this),
+        databaseUpdate: this.databaseUpdate.bind(this),
       });
     } else {
       if (loadProgress) {
@@ -173,18 +180,34 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
 
   databaseInitialLoad() {
     const { trackerState, database } = this.state;
-    const newTrackerState = trackerState._clone({ items: true, locationsChecked: true });
+    const newTrackerState = trackerState._clone({
+      items: true,
+      locationsChecked: true,
+    });
 
     for (let itemName in database.state.items) {
       const userDicts = database.state.items[itemName];
-      const count = userDicts[database.userId]?.count;
+      let count;
+      if (database.mode == Mode.ITEMSYNC) {
+        count = userDicts[database.roomId]?.count;
+      } else {
+        count = userDicts[database.userId]?.count;
+      }
 
       _.set(newTrackerState.items, itemName, count ?? 0);
     }
 
     for (let location in database.state.locations) {
-      const [generalLocation, detailedLocation] = location.split("#")
-      const isChecked = database.state.locations[location][database.userId]?.isChecked;
+      const [generalLocation, detailedLocation] = location.split("#");
+      let isChecked;
+
+      if (database.mode == Mode.ITEMSYNC) {
+        isChecked =
+          database.state.locations[location][database.roomId]?.isChecked;
+      } else {
+        isChecked =
+          database.state.locations[location][database.userId]?.isChecked;
+      }
 
       _.set(
         newTrackerState.locationsChecked,
@@ -193,6 +216,26 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
       );
     }
 
+    this.updateTrackerState(newTrackerState);
+  }
+
+  databaseUpdate(data: OnDataSaved) {
+    const { trackerState } = this.state;
+
+    let newTrackerState;
+    if (data.type == SaveDataType.ITEM) {
+      newTrackerState = trackerState._clone({ items: true });
+
+      _.set(newTrackerState.items, data.itemName, data.count ?? 0);
+    } else if (data.type == SaveDataType.LOCATION) {
+      newTrackerState = trackerState._clone({ locationsChecked: true });
+
+      _.set(
+        newTrackerState.locationsChecked,
+        [data.generalLocation, data.detailedLocation],
+        data.isChecked ?? false
+      );
+    }
 
     this.updateTrackerState(newTrackerState);
   }
@@ -427,6 +470,7 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
     const {
       colorPickerOpen,
       colors,
+      database,
       disableLogic,
       entrancesListOpen,
       isLoading,
@@ -470,6 +514,7 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
               trackSpheres={trackSpheres}
             />
             <LocationsTable
+              database={database}
               backgroundColor={extraLocationsBackground}
               clearOpenedMenus={this.clearOpenedMenus}
               clearRaceModeBannedLocations={this.clearRaceModeBannedLocations}
