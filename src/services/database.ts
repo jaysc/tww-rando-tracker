@@ -18,6 +18,8 @@ export default class Database {
   mode: Mode;
   roomId: string;
 
+  retryInterval?: NodeJS.Timeout;
+
   databaseInitialLoad: () => void;
   databaseUpdate: (data: OnDataSaved) => void;
 
@@ -27,7 +29,6 @@ export default class Database {
   };
 
   constructor(options: IDatabase) {
-    //todo add env
     console.log("connecting to server");
     this.gameId = options.gameId;
     this.permaId = options.permaId;
@@ -37,20 +38,28 @@ export default class Database {
   }
 
   public connect() {
-    this.websocket = new WebSocket("ws://localhost:3001/ws", "protocolOne");
+    this.websocket = new WebSocket(process.env.WEBSOCKET_SERVER, "protocolOne");
 
     this.websocket.onmessage = this.handleOnMessage.bind(this);
 
     this.websocket.onopen = function (event) {
+      clearInterval(this.retryInterval);
+      this.retryInterval = null;
       console.log("connected to server");
     }.bind(this);
 
     this.websocket.onclose = function (event) {
-      //todo handle retry logic
       console.log("disconnected from server");
+      this.retryConnect();
     }.bind(this);
 
     this.websocket.onerror = function (event) {}.bind(this);
+  }
+
+  private retryConnect() {
+    if (!this.retryInterval) {
+      this.retryInterval = setInterval(this.connect.bind(this), 2000);
+    }
   }
 
   private joinroom() {

@@ -1,5 +1,6 @@
 const path = require('path');
 
+const Dotenv = require('dotenv-webpack');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const sass = require('sass');
@@ -22,9 +23,9 @@ module.exports = (env, argv) => {
 
   return {
     entry: {
-      bundle: ["./src/index.jsx"],
+      bundle: ['./src/index.jsx'],
     },
-    devtool: isProduction ? undefined : "source-map",
+    devtool: isProduction ? undefined : 'source-map',
     devServer: {
       static: {
         directory: basePath,
@@ -33,55 +34,56 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: [
-        ".webpack.js",
-        ".js",
-        ".jsx",
-        ".json",
-        ".png",
-        ".ts",
-        ".tsx",
+        '.webpack.js',
+        '.js',
+        '.jsx',
+        '.json',
+        '.png',
+        '.ts',
+        '.tsx',
       ],
     },
     output: {
       clean: true,
     },
     plugins: [
+      new Dotenv(),
       new FaviconsWebpackPlugin(faviconsWebpackPluginSettings),
       new HtmlWebpackPlugin({
-        template: "./src/index.html",
+        template: './src/index.html',
       }),
       new webpack.ProvidePlugin({
-        Buffer: ["buffer", "Buffer"],
+        Buffer: ['buffer', 'Buffer'],
       }),
       ...(isProduction
         ? [
-            new WorkboxPlugin.GenerateSW({
-              clientsClaim: true,
-              skipWaiting: true,
-              runtimeCaching: [
-                {
-                  urlPattern: /https:\/\/raw\.githubusercontent\.com/,
-                  handler: "StaleWhileRevalidate",
-                },
-              ],
-            }),
-          ]
+          new WorkboxPlugin.GenerateSW({
+            clientsClaim: true,
+            skipWaiting: true,
+            runtimeCaching: [
+              {
+                urlPattern: /https:\/\/raw\.githubusercontent\.com/,
+                handler: 'StaleWhileRevalidate',
+              },
+            ],
+          }),
+        ]
         : []),
     ],
     module: {
       rules: [
         {
           test: /\.jsx?$/,
-          use: ["babel-loader"],
-          exclude: "/node_modules",
+          use: ['babel-loader'],
+          exclude: '/node_modules',
         },
         {
           test: /\.(s*)css$/,
           use: [
-            "style-loader",
-            "css-loader",
+            'style-loader',
+            'css-loader',
             {
-              loader: "sass-loader",
+              loader: 'sass-loader',
               options: {
                 implementation: sass,
               },
@@ -90,15 +92,15 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.png$/,
-          type: "asset/inline",
+          type: 'asset/inline',
         },
         {
           test: /\.tsx?$/,
-          use: "ts-loader",
+          use: 'ts-loader',
           exclude: /node_modules/,
         },
       ],
     },
-    mode: isProduction ? "production" : "development",
+    mode: isProduction ? 'production' : 'development',
   };
 };
