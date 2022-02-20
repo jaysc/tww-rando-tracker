@@ -47,7 +47,7 @@ module.exports = (env, argv) => {
       clean: true,
     },
     plugins: [
-      new Dotenv({ systemvars: !!isProduction }),
+      new Dotenv({ ignoreStub: true, systemvars: !!isProduction }),
       new FaviconsWebpackPlugin(faviconsWebpackPluginSettings),
       new HtmlWebpackPlugin({
         template: "./src/index.html",
