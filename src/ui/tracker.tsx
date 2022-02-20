@@ -24,6 +24,7 @@ import Database, {
   SaveDataType,
 } from "../services/database";
 import TrackerState from "../services/tracker-state";
+import Spheres from "../services/spheres";
 
 interface ITrackerProps {
   loadProgress: boolean;
@@ -50,7 +51,7 @@ interface ITrackerState {
   openedLocation?;
   openedLocationIsDungeon?;
   saveData?;
-  spheres?;
+  spheres?: Spheres
   trackSpheres: boolean;
   trackerState?: TrackerState;
 }
@@ -121,8 +122,6 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
     let initialData;
     let database: Database;
     if (gameId) {
-      // gameId means multiplayer
-      // todo get cookie etc
       database = new Database({
         permaId: permalink,
         gameId: gameId,
@@ -180,34 +179,30 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
 
   databaseInitialLoad() {
     const { trackerState, database } = this.state;
-    const newTrackerState = trackerState._clone({
+    let newTrackerState = trackerState._clone({
       items: true,
       locationsChecked: true,
     });
 
+    let destructId = database.mode == Mode.ITEMSYNC ? database.roomId : database.userId;
+
     for (let itemName in database.state.items) {
       const userDicts = database.state.items[itemName];
-      let count;
-      if (database.mode == Mode.ITEMSYNC) {
-        count = userDicts[database.roomId]?.count;
-      } else {
-        count = userDicts[database.userId]?.count;
-      }
+      const {count, generalLocation, detailedLocation} = userDicts[destructId];
 
       _.set(newTrackerState.items, itemName, count ?? 0);
+      if (generalLocation && detailedLocation){
+        newTrackerState = newTrackerState.setItemForLocation(
+          itemName,
+          generalLocation,
+          detailedLocation
+        );
+      }
     }
 
     for (let location in database.state.locations) {
       const [generalLocation, detailedLocation] = location.split("#");
-      let isChecked;
-
-      if (database.mode == Mode.ITEMSYNC) {
-        isChecked =
-          database.state.locations[location][database.roomId]?.isChecked;
-      } else {
-        isChecked =
-          database.state.locations[location][database.userId]?.isChecked;
-      }
+      const {isChecked} = database.state.locations[location][destructId];
 
       _.set(
         newTrackerState.locationsChecked,
@@ -222,11 +217,20 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
   databaseUpdate(data: OnDataSaved) {
     const { trackerState } = this.state;
 
-    let newTrackerState;
+    let newTrackerState: TrackerState;
     if (data.type == SaveDataType.ITEM) {
       newTrackerState = trackerState._clone({ items: true });
+      const {itemName, count, generalLocation, detailedLocation} = data;
 
-      _.set(newTrackerState.items, data.itemName, data.count ?? 0);
+
+      _.set(newTrackerState.items, itemName, count ?? 0);
+      if (generalLocation && detailedLocation){
+        newTrackerState = newTrackerState.setItemForLocation(
+          itemName,
+          generalLocation,
+          detailedLocation
+        );
+      }
     } else if (data.type == SaveDataType.LOCATION) {
       newTrackerState = trackerState._clone({ locationsChecked: true });
 
@@ -241,7 +245,7 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
   }
 
   incrementItem(itemName: string) {
-    const { lastLocation, trackerState, database } = this.state;
+    const { database, lastLocation, trackerState,  } = this.state;
 
     let newTrackerState = trackerState.incrementItem(itemName);
 
@@ -255,6 +259,8 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
       );
     }
 
+    this.updateTrackerState(newTrackerState);
+
     if (database) {
       const { generalLocation, detailedLocation } = lastLocation ?? {};
 
@@ -264,8 +270,6 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
         detailedLocation,
       });
     }
-
-    this.updateTrackerState(newTrackerState);
   }
 
   decrementItem(itemName) {

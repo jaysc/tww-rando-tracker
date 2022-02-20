@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import _ from "lodash";
+import { toast } from "react-toastify";
 
 export interface IDatabase {
   userId?: string;
@@ -17,6 +18,8 @@ export default class Database {
   userId: string;
   mode: Mode;
   roomId: string;
+  connectingToast;
+  disconnectedToast;
 
   retryInterval?: NodeJS.Timeout;
 
@@ -43,23 +46,51 @@ export default class Database {
     this.websocket.onmessage = this.handleOnMessage.bind(this);
 
     this.websocket.onopen = function (event) {
-      clearInterval(this.retryInterval);
-      this.retryInterval = null;
+      this.clearConnectRetry();
       console.log("connected to server");
     }.bind(this);
 
     this.websocket.onclose = function (event) {
-      console.log("disconnected from server");
+      this.displayDisconnectToast();
       this.retryConnect();
     }.bind(this);
 
-    this.websocket.onerror = function (event) {}.bind(this);
+    this.websocket.onerror = function (event) {
+      this.displayDisconnectToast();
+      this.retryConnect();
+    }.bind(this);
+
+    toast.dismiss(this.disconnectedToast);
+    toast.dismiss(this.connectingToast);
+    toast.success("Connected to server", {
+      hideProgressBar: true,
+    });
+  }
+
+  private displayDisconnectToast() {
+    if (!this.disconnectedToast) {
+      this.disconnectedToast = toast.error("Disconnected from server", {
+        autoClose: false,
+        closeButton: false,
+        hideProgressBar: true,
+      });
+    }
   }
 
   private retryConnect() {
     if (!this.retryInterval) {
       this.retryInterval = setInterval(this.connect.bind(this), 2000);
+      this.connectingToast = toast("Connecting to server", {
+        autoClose: false,
+        closeButton: false,
+        hideProgressBar: true,
+      });
     }
+  }
+
+  private clearConnectRetry() {
+    clearInterval(this.retryInterval);
+    this.retryInterval = null;
   }
 
   private joinroom() {
@@ -91,7 +122,13 @@ export default class Database {
       count,
       generalLocation,
       detailedLocation,
-    }: { count: number; generalLocation?: string; detailedLocation?: string }
+      sphere,
+    }: {
+      count: number;
+      generalLocation?: string;
+      detailedLocation?: string;
+      sphere?: number;
+    }
   ) {
     const message = {
       method: "set",
@@ -101,6 +138,7 @@ export default class Database {
         count,
         generalLocation,
         detailedLocation,
+        sphere,
       },
     };
     this.send(message);
