@@ -48,6 +48,12 @@ export default class Database {
     this.websocket.onopen = function (event) {
       this.clearConnectRetry();
       console.log("connected to server");
+
+      toast.dismiss(this.disconnectedToast);
+      toast.dismiss(this.connectingToast);
+      toast.success("Connected to server", {
+        hideProgressBar: true,
+      });
     }.bind(this);
 
     this.websocket.onclose = function (event) {
@@ -59,12 +65,6 @@ export default class Database {
       this.displayDisconnectToast();
       this.retryConnect();
     }.bind(this);
-
-    toast.dismiss(this.disconnectedToast);
-    toast.dismiss(this.connectingToast);
-    toast.success("Connected to server", {
-      hideProgressBar: true,
-    });
   }
 
   private displayDisconnectToast() {
