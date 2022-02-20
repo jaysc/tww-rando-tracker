@@ -4,11 +4,11 @@
   "description": "Tracker for The Wind Waker Randomizer",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --mode=production",
     "build:production": "webpack --mode=production",
     "docs": "jsdoc -c .jsdoc.json",
     "lint": "eslint --max-warnings 0 \"src/**/*.jsx\" \"src/**/*.js\" \"*.js\"",
-    "start": "webpack serve",
+    "start": "node server.js",
     "test": "jest --maxWorkers=5"
   },
   "repository": {
@@ -16,6 +16,7 @@
     "url": "git+https://github.com/wooferzfg/tww-rando-tracker.git"
   },
   "dependencies": {
+    "express": "^4.17.3",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "memoizee": "^0.4.15",
