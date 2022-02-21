@@ -41,6 +41,13 @@ export default class Database {
   }
 
   public connect() {
+    if (!this.connectingToast) {
+      this.connectingToast = toast("Connecting to server", {
+        autoClose: false,
+        closeButton: false,
+        hideProgressBar: true,
+      });
+    }
     this.websocket = new WebSocket(process.env.WEBSOCKET_SERVER, "protocolOne");
 
     this.websocket.onmessage = this.handleOnMessage.bind(this);
@@ -80,11 +87,6 @@ export default class Database {
   private retryConnect() {
     if (!this.retryInterval) {
       this.retryInterval = setInterval(this.connect.bind(this), 2000);
-      this.connectingToast = toast("Connecting to server", {
-        autoClose: false,
-        closeButton: false,
-        hideProgressBar: true,
-      });
     }
   }
 
