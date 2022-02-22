@@ -189,7 +189,18 @@ export default class Database {
   }
 
   private handleOnMessage(response) {
-    const responseData = JSON.parse(response.data) as MessageEvent;
+    if (response?.data === "PING") {
+      this.websocket.send("PONG");
+      return;
+    }
+
+    let responseData;
+    try {
+      responseData = JSON.parse(response.data) as MessageEvent;
+    } catch (e) {
+      console.log("Invalid json");
+      return;
+    }
 
     console.log("Recieved message:", responseData);
 
