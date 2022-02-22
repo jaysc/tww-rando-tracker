@@ -54,8 +54,6 @@ export default class Database {
 
     this.websocket.onopen = function (event) {
       this.clearConnectRetry();
-      console.log("connected to server");
-
       toast.dismiss(this.disconnectedToast);
       toast.dismiss(this.connectingToast);
       toast.success("Connected to server", {
@@ -77,7 +75,6 @@ export default class Database {
   private displayDisconnectToast() {
     if (!this.disconnectedToast) {
       this.disconnectedToast = toast.error("Disconnected from server", {
-        autoClose: false,
         closeButton: false,
         hideProgressBar: true,
       });
@@ -198,7 +195,7 @@ export default class Database {
     try {
       responseData = JSON.parse(response.data) as MessageEvent;
     } catch (e) {
-      console.log("Invalid json");
+      console.warn("Invalid json");
       return;
     }
 
