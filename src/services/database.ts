@@ -62,11 +62,13 @@ export default class Database {
     }.bind(this);
 
     this.websocket.onclose = function (event) {
+      console.warn(event);
       this.displayDisconnectToast();
       this.retryConnect();
     }.bind(this);
 
     this.websocket.onerror = function (event) {
+      console.error(event);
       this.displayDisconnectToast();
       this.retryConnect();
     }.bind(this);
