@@ -50,6 +50,7 @@ export default class Launcher extends React.PureComponent<{}, LauncherState> {
     this.loadFromSave = this.loadFromSave.bind(this);
     this.setOptionValue = this.setOptionValue.bind(this);
     this.launchOnline = this.launchOnline.bind(this);
+    this.loadFromFileLaunchOnline = this.loadFromFileLaunchOnline.bind(this);
   }
 
   getOptionValue(optionName) {
@@ -293,6 +294,13 @@ export default class Launcher extends React.PureComponent<{}, LauncherState> {
     Launcher.openTrackerWindow(`/online/${encodedPermalink}/${gameId}`);
   }
 
+  launchLoadFromFileLaunchOnline() {
+    const encodedPermalink = this.encodedPermalink();
+    const { gameId } = this.state;
+
+    Launcher.openTrackerWindow(`/load/online/${encodedPermalink}/${gameId}`);
+  }
+
   loadFromSave() {
     const encodedPermalink = this.encodedPermalink();
 
@@ -309,6 +317,11 @@ export default class Launcher extends React.PureComponent<{}, LauncherState> {
     await Storage.loadFileAndStore();
 
     this.loadFromSave();
+  }
+  async loadFromFileLaunchOnline() {
+    await Storage.loadFileAndStore();
+
+    this.launchLoadFromFileLaunchOnline();
   }
 
   launchButtonContainer() {
@@ -366,6 +379,14 @@ export default class Launcher extends React.PureComponent<{}, LauncherState> {
             disabled={!this.state.gameId}
           >
             Launch Online
+          </button>
+          <button
+            className="launcher-button"
+            type="button"
+            onClick={this.loadFromFileLaunchOnline}
+            disabled={!this.state.gameId}
+          >
+            Load File, Launch Online
           </button>
         </div>
       </>

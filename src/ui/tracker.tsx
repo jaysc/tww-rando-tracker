@@ -120,6 +120,25 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
     const { loadProgress, permalink, gameId } = this.props;
 
     let initialData;
+
+    if (loadProgress) {
+      const saveData = Storage.loadFromStorage();
+
+      if (!_.isNil(saveData)) {
+        try {
+          initialData = TrackerController.initializeFromSaveData(saveData);
+
+          toast.success("Progress loaded!");
+        } catch (err) {
+          TrackerController.reset();
+        }
+      }
+
+      if (_.isNil(initialData)) {
+        toast.error("Could not load progress from save data!");
+      }
+    }
+
     let database: Database;
     if (gameId) {
       database = new Database({
@@ -127,27 +146,11 @@ class Tracker extends React.PureComponent<ITrackerProps, ITrackerState> {
         gameId: gameId,
         databaseInitialLoad: this.databaseInitialLoad.bind(this),
         databaseUpdate: this.databaseUpdate.bind(this),
+        initialData
       });
-    } else {
-      if (loadProgress) {
-        const saveData = Storage.loadFromStorage();
-
-        if (!_.isNil(saveData)) {
-          try {
-            initialData = TrackerController.initializeFromSaveData(saveData);
-
-            toast.success("Progress loaded!");
-          } catch (err) {
-            TrackerController.reset();
-          }
-        }
-
-        if (_.isNil(initialData)) {
-          toast.error("Could not load progress from save data!");
-        }
-      }
     }
-    if (_.isNil(initialData)) {
+
+    if (_.isNil(initialData) || gameId) {
       try {
         const decodedPermalink = decodeURIComponent(permalink);
 

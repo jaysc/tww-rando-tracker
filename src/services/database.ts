@@ -7,9 +7,18 @@ export interface IDatabase {
   permaId: string;
   gameId: string;
   mode?: Mode;
+  initialData?: InitialData;
   databaseInitialLoad: () => void;
   databaseUpdate: (data: OnDataSaved) => void;
 }
+
+type InitialData = {
+  trackerState: {
+    items: {};
+    itemsForLocations: {};
+    locationsChecked: {};
+  };
+};
 
 export default class Database {
   websocket: WebSocket;
@@ -18,6 +27,7 @@ export default class Database {
   userId: string;
   mode: Mode;
   roomId: string;
+  initialData: InitialData;
   connectingToast;
   disconnectedToast;
 
@@ -38,6 +48,76 @@ export default class Database {
     this.databaseInitialLoad = options.databaseInitialLoad;
     this.databaseUpdate = options.databaseUpdate;
     this.mode = options.mode ?? Mode.ITEMSYNC;
+    if (options.initialData) {
+      const initialData: InitialData = {
+        trackerState: {
+          items: {},
+          itemsForLocations: {},
+          locationsChecked: {},
+        },
+      };
+
+      initialData.trackerState.items = _.reduce(
+        options.initialData.trackerState.items,
+        (result, value, key) => {
+          if (!!value) {
+            result[key] = value;
+          }
+
+          return result;
+        },
+        {}
+      );
+
+      initialData.trackerState.itemsForLocations = _.reduce(
+        options.initialData.trackerState.itemsForLocations,
+        (result, detailedLocations, generalLocation) => {
+          const reduceResult = _.reduce(
+            detailedLocations,
+            (generalLocationResult, value, key) => {
+              if (!!value) {
+                generalLocationResult[key] = value;
+              }
+
+              return generalLocationResult;
+            },
+            {}
+          );
+
+          if (Object.keys(reduceResult).length) {
+            result[generalLocation] = reduceResult;
+          }
+
+          return result;
+        },
+        {}
+      );
+
+      initialData.trackerState.locationsChecked = _.reduce(
+        options.initialData.trackerState.locationsChecked,
+        (result, detailedLocations, generalLocation) => {
+          const reduceResult = _.reduce(
+            detailedLocations,
+            (generalLocationResult, value, key) => {
+              if (!!value) {
+                generalLocationResult[key] = value;
+              }
+
+              return generalLocationResult;
+            },
+            {}
+          );
+          if (Object.keys(reduceResult).length) {
+            result[generalLocation] = reduceResult;
+          }
+
+          return result;
+        },
+        {}
+      );
+
+      this.initialData = initialData;
+    }
   }
 
   public connect() {
@@ -101,6 +181,7 @@ export default class Database {
         name: this.gameId,
         perma: this.permaId,
         mode: "ITEMSYNC",
+        initialData: this.initialData,
       },
     };
     this.send(message);
