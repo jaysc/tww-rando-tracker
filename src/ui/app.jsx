@@ -48,6 +48,11 @@ export default function App() {
           path="/tracker/online/:permalink/:gameId"
           element={<RenderTracker loadProgress={false} />}
         />
+        <Route
+          exact
+          path="/tracker/load/online/:permalink/:gameId"
+          element={<RenderTracker loadProgress />}
+        />
       </Routes>
     </HashRouter>
   );
