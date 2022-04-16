@@ -4,6 +4,7 @@ import OPTIONS from '../data/options.json';
 import PROGRESSIVE_STARTING_ITEMS from '../data/progressive-starting-items.json';
 import RANDOMIZE_ENTRANCES_OPTIONS from '../data/randomize-entrances-options.json';
 import REGULAR_STARTING_ITEMS from '../data/regular-starting-items.json';
+import REGULAR_STARTING_ITEMS_EXTRA from '../data/regular-starting-items-extra.json';
 import SWORD_MODE_OPTIONS from '../data/sword-mode-options.json';
 
 import BinaryString from './binary-string';
@@ -11,8 +12,11 @@ import Constants from './constants';
 
 class Permalink {
   static OPTIONS = Constants.createFromArray(OPTIONS);
+  static GEN_VERSION: string = '';
 
-  static RANDOMIZE_ENTRANCES_OPTIONS = Constants.createFromArray(RANDOMIZE_ENTRANCES_OPTIONS);
+  static RANDOMIZE_ENTRANCES_OPTIONS = Constants.createFromArray(
+    RANDOMIZE_ENTRANCES_OPTIONS
+  );
 
   static SWORD_MODE_OPTIONS = Constants.createFromArray(SWORD_MODE_OPTIONS);
 
@@ -25,7 +29,7 @@ class Permalink {
 
   static DEFAULT_PERMALINK = 'MS45LjAAU2VlZAAHAQMADgBAAwAAAAAAAQAA';
 
-  static decode(permalinkString) {
+  static decode(permalinkString: string) {
     const binaryString = BinaryString.fromBase64(permalinkString);
     const options = {};
 
@@ -33,14 +37,24 @@ class Permalink {
       configItem.decode(binaryString, options);
     });
 
+    _.set(options, 'gen_version', this.GEN_VERSION);
+
+    //Mock to 1.9.0 so it downloads the relavent item_location logic file.
+    _.set(options, 'version', '1.9.0');
+
     return options;
   }
 
   static encode(options) {
+    const encodeOptions = _.cloneDeep(options);
+
+    _.set(encodeOptions, 'version', _.get(options, 'gen_version'));
+    delete encodeOptions.gen_version;
+
     const binaryString = new BinaryString();
 
     _.forEach(this._CONFIG, (configItem) => {
-      configItem.encode(binaryString, options);
+      configItem.encode(binaryString, encodeOptions);
     });
 
     return binaryString.toBase64();
@@ -105,6 +119,10 @@ class Permalink {
       decode: (binaryString, options) => {
         const stringValue = binaryString.popString();
         _.set(options, optionName, stringValue);
+
+        if (optionName == 'version') {
+          this.GEN_VERSION = stringValue;
+        }
       },
       encode: (binaryString, options) => {
         const stringValue = _.get(options, optionName);
@@ -163,7 +181,9 @@ class Permalink {
 
         if (_.isNil(dropdownValue)) {
           // istanbul ignore next
-          throw Error(`Invalid dropdown index: ${dropdownIndex} for option: ${optionName}`);
+          throw Error(
+            `Invalid dropdown index: ${dropdownIndex} for option: ${optionName}`
+          );
         }
 
         _.set(options, optionName, dropdownValue);
@@ -174,7 +194,9 @@ class Permalink {
 
         if (dropdownIndex < 0) {
           // istanbul ignore next
-          throw Error(`Invalid dropdown value: ${dropdownValue} for option: ${optionName}`);
+          throw Error(
+            `Invalid dropdown value: ${dropdownValue} for option: ${optionName}`
+          );
         }
 
         binaryString.addNumber(dropdownIndex, BinaryString.BYTE_SIZE);
@@ -182,12 +204,19 @@ class Permalink {
     };
   }
 
+  static _get_config_starting_items() {
+    return this.GEN_VERSION == '0.0.3'
+      ? REGULAR_STARTING_ITEMS_EXTRA
+      : REGULAR_STARTING_ITEMS;
+  }
+
   static _startingGearConfig() {
     const optionName = this.OPTIONS.STARTING_GEAR;
 
     return {
       decode: (binaryString, options) => {
-        _.forEach(REGULAR_STARTING_ITEMS, (item) => {
+        const config_starting_items = this._get_config_starting_items();
+        _.forEach(config_starting_items, (item) => {
           const itemValue = binaryString.popNumber(1);
           _.set(options, [optionName, item], itemValue);
         });
@@ -198,7 +227,9 @@ class Permalink {
         });
       },
       encode: (binaryString, options) => {
-        _.forEach(REGULAR_STARTING_ITEMS, (item) => {
+        const config_starting_items = this._get_config_starting_items();
+
+        _.forEach(config_starting_items, (item) => {
           const itemValue = _.get(options, [optionName, item]);
 
           if (_.isNil(itemValue)) {
