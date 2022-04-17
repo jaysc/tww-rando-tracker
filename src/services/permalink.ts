@@ -205,7 +205,7 @@ class Permalink {
   }
 
   static _get_config_starting_items() {
-    return this.GEN_VERSION == '0.0.3'
+    return this.GEN_VERSION != '1.9.0'
       ? REGULAR_STARTING_ITEMS_EXTRA
       : REGULAR_STARTING_ITEMS;
   }
