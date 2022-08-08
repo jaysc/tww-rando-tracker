@@ -10,11 +10,11 @@ Based on the original tracker by [wooferzfg](https://github.com/wooferzfg/tww-ra
 
 ## Build Instructions
 
-Building and running the tracker locally requires you to [install Node 14](https://nodejs.org/en/download/).
+Building and running the tracker locally requires you to [install Node 16](https://nodejs.org/en/download/).
 
 After installing Node and cloning the repository, install the required dependencies:
 ```bash
-npm install
+npm install --force
 ```
 You can then build and serve the tracker application:
 ```bash
