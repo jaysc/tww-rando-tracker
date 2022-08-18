@@ -231,32 +231,35 @@ class SettingsWindow extends React.PureComponent {
 
     return (
       <div className="settings-window">
-        <div className="settings-top-row">
-          <div className="settings-title">Settings</div>
-          <div
-            className="close-button"
-            onClick={toggleSettingsWindow}
-            onKeyDown={KeyDownWrapper.onSpaceKey(toggleSettingsWindow)}
-            role="button"
-            tabIndex="0"
-          >
-            X Close
+        <div className="settings-wrapper">
+          <div className="settings-top-row">
+            <div className="settings-title">Settings</div>
+            <div
+              className="close-button"
+              onClick={toggleSettingsWindow}
+              onKeyDown={KeyDownWrapper.onSpaceKey(toggleSettingsWindow)}
+              role="button"
+              tabIndex="0"
+            >
+              X Close
+            </div>
+          </div>
+          <div>
+            <div className="settings">
+              {this.progressItemLocationsTable()}
+              {this.additionalRandomizationOptionsTable()}
+              {this.convenienceTweaksTable()}
+            </div>
+            <div className="settings-apply">
+              <button
+                onClick={this.applySettings}
+                type="button"
+              >
+                Apply
+              </button>
+            </div>
           </div>
         </div>
-        <div className="settings">
-          {this.progressItemLocationsTable()}
-          {this.additionalRandomizationOptionsTable()}
-          {this.convenienceTweaksTable()}
-        </div>
-        <div>
-          <button
-            onClick={this.applySettings}
-            type="button"
-          >
-            Apply
-          </button>
-        </div>
-
       </div>
     );
   }
