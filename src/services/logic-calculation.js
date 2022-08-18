@@ -46,6 +46,16 @@ class LogicCalculation {
     UNAVAILABLE_LOCATION: 'unavailable-location',
   };
 
+  clearCache() {
+    Memoizer.invalidate([
+      this.estimatedLocationsLeftToCheck,
+      this.locationCounts,
+      this.locationsList,
+      this.totalLocationsAvailable,
+      this.totalLocationsRemaining,
+    ]);
+  }
+
   formattedRequirementsForLocation(generalLocation, detailedLocation) {
     const requirementsForLocation = LogicHelper.requirementsForLocation(
       generalLocation,

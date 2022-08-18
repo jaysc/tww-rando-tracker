@@ -786,3 +786,38 @@ button:hover:enabled {
     flex-grow: 1;
   }
 }
+
+.settings-window {
+  @extend .color-picker-window;
+  @extend .launcher-container;
+  width: 800px;
+  z-index: 10;
+  background-color: rgb(126, 158, 71);
+
+  .settings {
+    background-image: none;
+
+    table {
+      font-size: 1em;
+    }
+  }
+
+  .settings-top-row {
+    color: white;
+    display: flex;
+    text-shadow: 1.5px 1px rgba(0, 0, 0, 0.5);
+  }
+
+  .settings-title {
+    font-size: 20px;
+  }
+
+  .close-button {
+    cursor: pointer;
+    text-align: right;
+    height: 25px;
+    flex-grow: 1;
+  }
+
+
+}

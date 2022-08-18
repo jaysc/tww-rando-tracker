@@ -24,11 +24,13 @@ class Buttons extends React.PureComponent {
       disableLogic,
       entrancesListOpen,
       onlyProgressLocations,
+      settingsWindowOpen,
       trackSpheres,
       toggleColorPicker,
       toggleDisableLogic,
       toggleEntrancesList,
       toggleOnlyProgressLocations,
+      toggleSettingsWindow,
       toggleTrackSpheres,
     } = this.props;
 
@@ -38,6 +40,9 @@ class Buttons extends React.PureComponent {
     const entrancesListText = entrancesListOpen
       ? 'Close Entrances'
       : 'View Entrances';
+    const settingsWindowText = settingsWindowOpen
+      ? 'Close Settings Window'
+      : 'Open Settings Window';
     const isRandomEntrances = LogicHelper.isRandomEntrances();
 
     return (
@@ -85,6 +90,12 @@ class Buttons extends React.PureComponent {
         >
           {colorPickerText}
         </button>
+        <button
+          onClick={toggleSettingsWindow}
+          type="button"
+        >
+          {settingsWindowText}
+        </button>
       </div>
     );
   }
@@ -96,11 +107,13 @@ Buttons.propTypes = {
   entrancesListOpen: PropTypes.bool.isRequired,
   onlyProgressLocations: PropTypes.bool.isRequired,
   saveData: PropTypes.string.isRequired,
+  settingsWindowOpen: PropTypes.bool.isRequired,
   trackSpheres: PropTypes.bool.isRequired,
   toggleColorPicker: PropTypes.func.isRequired,
   toggleDisableLogic: PropTypes.func.isRequired,
   toggleEntrancesList: PropTypes.func.isRequired,
   toggleOnlyProgressLocations: PropTypes.func.isRequired,
+  toggleSettingsWindow: PropTypes.func.isRequired,
   toggleTrackSpheres: PropTypes.func.isRequired,
 };
 

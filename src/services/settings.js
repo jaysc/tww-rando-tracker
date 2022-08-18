@@ -83,6 +83,30 @@ class Settings {
     return this.version;
   }
 
+  static updateOptions(newOptions) {
+    this.options = newOptions;
+    this.flags = this.resolveFlags(newOptions);
+  }
+
+  static resolveFlags(options) {
+    let flags = [];
+    _.forEach(this._FLAGS_MAPPING, (flagsForOption, optionName) => {
+      if (_.get(options, optionName)) {
+        flags = _.concat(flags, flagsForOption);
+      }
+    });
+
+    if (_.get(options, Permalink.OPTIONS.PROGRESSION_TRIFORCE_CHARTS)) {
+      if (_.get(options, Permalink.OPTIONS.RANDOMIZE_CHARTS)) {
+        flags.push(this.FLAGS.SUNKEN_TREASURE);
+      } else {
+        flags.push(this.FLAGS.SUNKEN_TRIFORCE);
+      }
+    }
+
+    return flags;
+  }
+
   static _FLAGS_MAPPING = {
     [Permalink.OPTIONS.PROGRESSION_DUNGEONS]: [this.FLAGS.DUNGEON],
     [Permalink.OPTIONS.PROGRESSION_GREAT_FAIRIES]: [this.FLAGS.GREAT_FAIRY],
