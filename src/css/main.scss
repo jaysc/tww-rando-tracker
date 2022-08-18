@@ -793,7 +793,12 @@ button:hover:enabled {
   width: 800px;
   z-index: 10;
   background-color: rgb(126, 158, 71);
+  position: absolute;
 
+  .settings-wrapper {
+    overflow-y: auto;
+    max-height: 100vh;
+  }
   .settings {
     background-image: none;
 
@@ -810,6 +815,10 @@ button:hover:enabled {
 
   .settings-title {
     font-size: 20px;
+  }
+
+  .settings-apply {
+    padding-bottom: 25px;
   }
 
   .close-button {
