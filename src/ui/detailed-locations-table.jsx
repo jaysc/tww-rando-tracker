@@ -2,6 +2,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Locations from '../services/locations';
 import LogicCalculation from '../services/logic-calculation';
 import LogicHelper from '../services/logic-helper';
 import Permalink from '../services/permalink';
@@ -22,8 +23,14 @@ class DetailedLocationsTable extends React.PureComponent {
 
     const requirements = logic.formattedRequirementsForLocation(generalLocation, detailedLocation);
 
+    const locationTypes = Locations.getLocation(
+      generalLocation,
+      detailedLocation,
+      Locations.KEYS.TYPES,
+    );
+
     return (
-      <RequirementsTooltip requirements={requirements} />
+      <RequirementsTooltip locationTypes={locationTypes} requirements={requirements} />
     );
   }
 
