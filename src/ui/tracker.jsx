@@ -435,7 +435,6 @@ class Tracker extends React.PureComponent {
           )}
           {settingsWindowOpen && (
             <SettingsWindow
-              logic={logic}
               toggleSettingsWindow={this.toggleSettingsWindow}
               updateLogic={this.updateLogic}
             />
