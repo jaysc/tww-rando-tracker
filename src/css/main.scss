@@ -797,7 +797,7 @@ button:hover:enabled {
 
   .settings-wrapper {
     overflow-y: auto;
-    max-height: 100vh;
+    max-height: calc(100vh - 60px);
   }
   .settings {
     background-image: none;
@@ -815,10 +815,6 @@ button:hover:enabled {
 
   .settings-title {
     font-size: 20px;
-  }
-
-  .settings-apply {
-    padding-bottom: 25px;
   }
 
   .close-button {
