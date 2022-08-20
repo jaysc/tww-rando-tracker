@@ -29,6 +29,19 @@ class TrackerController {
     );
   }
 
+  static async refreshLogic() {
+    const {
+      macrosFile,
+    } = await LogicLoader.loadLogicFiles();
+
+    Macros.initialize(macrosFile);
+
+    LogicTweaks.applyTweaks();
+
+    LogicHelper.reset();
+    LogicHelper.initialize();
+  }
+
   static initializeFromSaveData(saveData) {
     const {
       locations,

@@ -5,6 +5,7 @@ import { Oval } from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 
 import LogicHelper from '../services/logic-helper';
+import Settings from '../services/settings';
 import Spheres from '../services/spheres';
 import TrackerController from '../services/tracker-controller';
 
@@ -312,8 +313,14 @@ class Tracker extends React.PureComponent {
     this.updatePreferences({ colors: colorChanges });
   }
 
-  updateLogic() {
+  async updateLogic(newOptions) {
     const { logic, trackerState } = this.state;
+
+    Settings.updateOptions(newOptions);
+    await TrackerController.refreshLogic();
+
+    logic.clearCache();
+
     const newLogic = _.cloneDeep(logic);
 
     this.setState({ logic: newLogic, spheres: new Spheres(trackerState) });

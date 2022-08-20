@@ -2,8 +2,6 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import LogicCalculation from '../services/logic-calculation';
-import LogicHelper from '../services/logic-helper';
 import Permalink from '../services/permalink';
 import Settings from '../services/settings';
 
@@ -219,11 +217,7 @@ class SettingsWindow extends React.PureComponent {
     const { options } = this.state;
     const { updateLogic, toggleSettingsWindow } = this.props;
 
-    Settings.updateOptions(options);
-    LogicHelper.reset();
-    LogicHelper.initialize();
-    updateLogic();
-
+    updateLogic(options);
     toggleSettingsWindow();
   }
 

@@ -49,10 +49,16 @@ class LogicCalculation {
   clearCache() {
     Memoizer.invalidate([
       this.estimatedLocationsLeftToCheck,
+      this.formattedRequirementsForEntrance,
+      this.formattedRequirementsForLocation,
+      this.isEntranceAvailable,
+      this.isLocationAvailable,
       this.locationCounts,
       this.locationsList,
       this.totalLocationsAvailable,
       this.totalLocationsRemaining,
+      this._itemsRemainingForLocation,
+      this._itemsRemainingForRequirement,
     ]);
   }
 
