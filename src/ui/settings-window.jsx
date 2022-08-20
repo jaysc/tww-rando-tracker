@@ -221,6 +221,7 @@ class SettingsWindow extends React.PureComponent {
 
     Settings.updateOptions(options);
     LogicHelper.reset();
+    LogicHelper.initialize();
     updateLogic();
 
     toggleSettingsWindow();
