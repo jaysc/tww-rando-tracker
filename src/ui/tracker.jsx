@@ -5,7 +5,6 @@ import { Oval } from 'react-loader-spinner';
 import { ToastContainer, toast } from 'react-toastify';
 
 import LogicHelper from '../services/logic-helper';
-import Spheres from '../services/spheres';
 import TrackerController from '../services/tracker-controller';
 
 import Buttons from './buttons';
@@ -236,9 +235,7 @@ class Tracker extends React.PureComponent {
   unsetExit(dungeonOrCaveName) {
     const { trackerState } = this.state;
 
-    const leadsTo = _.get(trackerState, ['entrances', dungeonOrCaveName], dungeonOrCaveName);
-
-    const entryName = LogicHelper.entryName(leadsTo);
+    const entryName = LogicHelper.entryName(dungeonOrCaveName);
     const newTrackerState = trackerState
       .incrementItem(entryName)
       .unsetEntranceForExit(dungeonOrCaveName);
@@ -249,8 +246,7 @@ class Tracker extends React.PureComponent {
   updateEntranceForExit(exitName, entranceName) {
     const { trackerState } = this.state;
 
-    const entryName = LogicHelper.entryName(entranceName);
-
+    const entryName = LogicHelper.entryName(exitName);
     const newTrackerState = trackerState
       .incrementItem(entryName)
       .setEntranceForExit(exitName, entranceName);
@@ -316,10 +312,10 @@ class Tracker extends React.PureComponent {
   }
 
   updateLogic() {
-    const { logic, trackerState } = this.state;
+    const { logic } = this.state;
     const newLogic = _.cloneDeep(logic);
 
-    this.setState({ logic: newLogic, spheres: new Spheres(trackerState) });
+    this.setState({ logic: newLogic });
   }
 
   updatePreferences(preferenceChanges) {
