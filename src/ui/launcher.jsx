@@ -341,7 +341,11 @@ export default class Launcher extends React.PureComponent {
             {this.launchButtonContainer()}
           </div>
           <div className="attribution">
-            <span>Maintained by wooferzfg • Source Code on </span>
+            <span>Maintained by Jaysc/Colfra • Check out the </span>
+            <a href="https://discord.gg/HQP3cAF">TWW Randomizer Racing discord</a>
+          </div>
+          <div className="attribution">
+            <span>Based on code by wooferzfg • Source Code on </span>
             <a href="https://github.com/wooferzfg/tww-rando-tracker">GitHub</a>
             <span> • Original Tracker by BigDunka</span>
           </div>
