@@ -84,6 +84,10 @@ class LogicHelper {
     OR: '|',
   };
 
+  static MISC_ITEMS = {
+    MAGIC_METER_UPGRADE: 'Magic Meter Upgrade',
+  };
+
   static CHART_TYPES = {
     TREASURE: 'Treasure',
     TRIFORCE: 'Triforce',

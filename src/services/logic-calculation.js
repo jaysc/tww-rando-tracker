@@ -381,6 +381,7 @@ class LogicCalculation {
     const remainingItemsForRequirements = [
       LogicCalculation._impossibleRequirementRemaining(requirement),
       LogicCalculation._nothingRequirementRemaining(requirement),
+      this._hasMagicRequirment(requirement),
       this._itemCountRequirementRemaining(requirement),
       this._itemRequirementRemaining(requirement),
       this._hasAccessedOtherLocationRequirementRemaining(requirement),
@@ -406,6 +407,14 @@ class LogicCalculation {
   static _nothingRequirementRemaining(requirement) {
     if (requirement === LogicHelper.TOKENS.NOTHING) {
       return 0;
+    }
+
+    return null;
+  }
+
+  _hasMagicRequirment(requirement) {
+    if (requirement === LogicHelper.MISC_ITEMS.MAGIC_METER_UPGRADE) {
+      return _.isNil(this._currentItemValue(LogicHelper.ITEMS.PROGRESSIVE_MAGIC_METER)) ? 1 : 0;
     }
 
     return null;
